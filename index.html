@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One In A Million — O, I AM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --teal: #5699a3;
+    --teal-light: #e8f4f6;
+    --amber: #d4c8c0;
+    --amber-light: #f5f0ed;
+    --text: #2c2c2c;
+    --text-secondary: #6b6b6b;
+    --bg: #fafaf8;
+    --card-bg: #ffffff;
+    --border: #e8e5e0;
+    --radius: 14px;
+  }
+
+  body {
+    font-family: 'Inter', 'Noto Serif SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 80px 24px 40px;
+    text-align: center;
+  }
+
+  .hero-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: var(--teal);
+    margin-bottom: 6px;
+  }
+
+  .hero-abbr {
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    color: var(--text-secondary);
+    margin-bottom: 48px;
+  }
+
+  /* ── Story ── */
+  .story {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 24px 56px;
+  }
+
+  .story-text {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1rem;
+    line-height: 2;
+    color: var(--text-secondary);
+    text-align: justify;
+    position: relative;
+  }
+
+  .story-text::before {
+    content: '"';
+    font-family: 'Noto Serif SC', serif;
+    font-size: 4rem;
+    color: var(--amber);
+    position: absolute;
+    top: -20px;
+    left: -8px;
+    line-height: 1;
+  }
+
+  .story-text .name {
+    color: var(--teal);
+    font-weight: 600;
+  }
+
+  .story-text .song {
+    font-style: italic;
+    color: var(--text);
+  }
+
+  .divider {
+    width: 40px;
+    height: 2px;
+    background: var(--amber);
+    margin: 40px auto;
+    border-radius: 1px;
+  }
+
+  /* ── Projects ── */
+  .projects {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+
+  .project-card {
+    display: block;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    margin-bottom: 16px;
+  }
+
+  .project-card:hover {
+    border-color: var(--teal);
+    box-shadow: 0 4px 20px rgba(86, 153, 163, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .project-card .card-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--teal-light);
+    color: var(--teal);
+    margin-bottom: 12px;
+  }
+
+  .project-card h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .project-card p {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .project-card .arrow {
+    float: right;
+    margin-top: -28px;
+    font-size: 1.2rem;
+    color: var(--amber);
+    transition: transform 0.2s;
+  }
+
+  .project-card:hover .arrow {
+    transform: translateX(4px);
+    color: var(--teal);
+  }
+
+  /* ── Coming Soon Card ── */
+  .coming-soon {
+    background: var(--amber-light);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 24px 32px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border);
+  }
+
+  footer a {
+    color: var(--teal);
+    text-decoration: none;
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 639px) {
+    .hero { padding: 56px 20px 32px; }
+    .hero-title { font-size: 2rem; }
+    .story { padding: 0 20px 40px; }
+    .story-text { font-size: 0.92rem; }
+    .projects { padding: 0 20px 60px; }
+    .project-card { padding: 22px 24px; }
+  }
+</style>
+</head>
+<body>
+
+  <section class="hero">
+    <h1 class="hero-title">One In A Million</h1>
+    <p class="hero-abbr">O, I AM</p>
+  </section>
+
+  <section class="story">
+    <div class="story-text">
+      <span class="name">陈婉仪</span>，这是我的名字，也是这个网站名字的由来。One 谐音「婉」，一 谐音「仪」——万里挑一，是我给自己名字的一种好意头。它也是我喜欢的女团 TWICE 的一种概念，一首叫 <span class="song">ONE IN A MILLION</span> 的歌，陪我走过大学最迷茫的那段日子，也带我去了来香港后的第一场演唱会。这个小站，用来记录我在技术路上每一步认真走过的脚印。
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="projects">
+    <p class="section-label">Projects</p>
+
+    <a class="project-card" href="projects/cms-walkthrough/index.html">
+      <span class="card-tag">INTERNSHIP</span>
+      <h3>Lead Scraper CMS 前端框架教学</h3>
+      <p>React + TypeScript + Vite 全栈 CMS 系统的代码架构、数据流与认证机制完整解析。</p>
+      <span class="arrow">→</span>
+    </a>
+
+    <div class="coming-soon">
+      更多项目正在路上 ✦
+    </div>
+  </section>
+
+  <footer>
+    Built with care by 婉仪 · <a href="https://github.com/evachenwanyi02">GitHub</a>
+  </footer>
+
+</body>
+</html>
