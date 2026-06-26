@@ -5,60 +5,90 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>One In A Million — O, I AM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;400;500;600&family=Playfair+Display:wght@400;500;600&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
     --teal: #5699a3;
     --teal-light: #e8f4f6;
+    --teal-dark: #4a8a94;
     --amber: #d4c8c0;
     --amber-light: #f5f0ed;
     --text: #2c2c2c;
     --text-secondary: #6b6b6b;
+    --text-muted: #999;
     --bg: #fafaf8;
     --card-bg: #ffffff;
     --border: #e8e5e0;
-    --radius: 14px;
+    --radius: 10px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
   }
 
   body {
-    font-family: 'Inter', 'Noto Serif SC', sans-serif;
+    font-family: 'DM Sans', 'Noto Serif SC', sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.7;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* ── Hero ── */
+  /* ── Hero with floating logos ── */
   .hero {
-    max-width: 720px;
+    position: relative;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 80px 24px 40px;
+    padding: 50px 40px 24px;
     text-align: center;
+    overflow: hidden;
+  }
+
+  /* Floating logos container — sits behind title */
+  .logo-field {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .floating-logo {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    pointer-events: none;
+    will-change: transform, opacity;
+    filter: grayscale(20%);
   }
 
   .hero-title {
-    font-family: 'Inter', sans-serif;
-    font-size: 2.8rem;
-    font-weight: 300;
-    letter-spacing: 0.12em;
+    position: relative;
+    z-index: 1;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
     color: var(--teal);
     cursor: pointer;
     transition: color 0.2s;
     user-select: none;
-    margin-bottom: 48px;
+    margin-bottom: 28px;
   }
 
-  .hero-title:hover { color: #4a8a94; }
+  .hero-title:hover { color: var(--teal-dark); }
 
   .hero-title .hint {
     display: block;
-    font-size: 0.72rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem;
     font-weight: 400;
     letter-spacing: 0.15em;
     color: var(--amber);
-    margin-top: 8px;
+    margin-top: 6px;
     transition: opacity 0.3s;
   }
 
@@ -66,8 +96,10 @@
 
   /* ── Story Dropdown ── */
   .story-dropdown {
+    position: relative;
+    z-index: 1;
     max-width: 560px;
-    margin: -20px auto 0;
+    margin: -12px auto 0;
     padding: 0 24px;
     overflow: hidden;
     max-height: 0;
@@ -85,155 +117,432 @@
     background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 28px 32px;
+    padding: 24px 28px;
   }
 
   .story-subtitle {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.82rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
     font-weight: 600;
     letter-spacing: 0.18em;
     color: var(--teal);
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .story-text {
     font-family: 'Noto Serif SC', serif;
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     line-height: 2;
     color: var(--text-secondary);
     text-align: justify;
   }
 
-  .story-text .name {
-    color: var(--teal);
-    font-weight: 600;
-  }
-
-  .story-text .song {
-    font-style: italic;
-    color: var(--text);
-  }
+  .story-text .name { color: var(--teal); font-weight: 600; }
+  .story-text .song { font-style: italic; color: var(--text); }
 
   .divider {
-    width: 40px;
+    width: 36px;
     height: 2px;
     background: var(--amber);
-    margin: 40px auto;
+    margin: 28px auto;
     border-radius: 1px;
   }
 
-  /* ── Projects ── */
+  /* ── Projects Section ── */
   .projects {
-    max-width: 720px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 24px 80px;
+    padding: 0 40px 80px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
   }
 
   .section-label {
-    font-size: 0.75rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--text-secondary);
-    margin-bottom: 20px;
   }
 
-  .project-card {
-    display: block;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 28px 32px;
+  /* ── Upload Button ── */
+  .upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--teal);
+    background: var(--teal-light);
+    border: 1px solid transparent;
+    border-radius: 20px;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .upload-btn:hover {
+    background: var(--teal);
+    color: #fff;
+  }
+
+  .upload-btn svg { width: 14px; height: 14px; }
+
+  #fileInput { display: none; }
+
+  /* ── Projects Grid — 6 columns ── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 56px 44px;
+  }
+
+  /* ── Book Card ── */
+  .book-card {
+    display: flex;
+    flex-direction: column;
     text-decoration: none;
     color: inherit;
-    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
-    margin-bottom: 16px;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  .project-card:hover {
-    border-color: var(--teal);
-    box-shadow: 0 4px 20px rgba(86, 153, 163, 0.1);
-    transform: translateY(-2px);
+  .book-card:hover { transform: translateY(-6px); }
+
+  .book-cover {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    border-radius: 4px 8px 8px 4px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.25s ease;
+    cursor: pointer;
   }
 
-  .project-card .card-tag {
+  .book-card:hover .book-cover { box-shadow: var(--shadow-md); }
+
+  .book-cover::before,
+  .book-cover::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border-radius: 4px 8px 8px 4px;
+    pointer-events: none;
+  }
+
+  .book-cover::before {
+    background: #f0ece7;
+    transform: translate(3px, 3px);
+    z-index: -2;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+  }
+
+  .book-cover::after {
+    background: #f5f1ec;
+    transform: translate(1.5px, 1.5px);
+    z-index: -1;
+    box-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.04);
+  }
+
+  .book-spine {
+    position: absolute;
+    left: 0; top: 0;
+    width: 5px; height: 100%;
+    background: linear-gradient(90deg, rgba(0,0,0,0.08), rgba(0,0,0,0.02));
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .book-thumbnail {
+    width: 100%; height: 100%;
+    background: linear-gradient(145deg, #f8f6f3 0%, #eee9e3 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .doc-lines {
+    width: 58%;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    opacity: 0.22;
+  }
+
+  .doc-lines span {
+    display: block; height: 2px;
+    background: var(--text); border-radius: 1px;
+  }
+
+  .doc-lines span:nth-child(odd) { width: 100%; }
+  .doc-lines span:nth-child(even) { width: 70%; }
+  .doc-lines span:last-child { width: 45%; }
+
+  .size-indicator {
+    position: absolute; bottom: 5px; right: 5px;
+    display: flex; gap: 1.5px; align-items: flex-end; opacity: 0.3;
+  }
+
+  .size-indicator .bar { width: 3px; background: var(--teal); border-radius: 1px; }
+
+  .size-indicator.size-sm .bar:nth-child(1) { height: 4px; opacity: 1; }
+  .size-indicator.size-sm .bar:nth-child(2) { height: 7px; opacity: 0.3; }
+  .size-indicator.size-sm .bar:nth-child(3) { height: 10px; opacity: 0.15; }
+  .size-indicator.size-md .bar:nth-child(1) { height: 4px; opacity: 1; }
+  .size-indicator.size-md .bar:nth-child(2) { height: 7px; opacity: 1; }
+  .size-indicator.size-md .bar:nth-child(3) { height: 10px; opacity: 0.3; }
+  .size-indicator.size-lg .bar:nth-child(1) { height: 4px; opacity: 1; }
+  .size-indicator.size-lg .bar:nth-child(2) { height: 7px; opacity: 1; }
+  .size-indicator.size-lg .bar:nth-child(3) { height: 10px; opacity: 1; }
+
+  .book-label {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(0deg, rgba(86,153,163,0.88) 0%, rgba(86,153,163,0.65) 70%, rgba(86,153,163,0) 100%);
+    padding: 24px 8px 8px;
+    z-index: 2;
+  }
+
+  .book-label .label-tag {
     display: inline-block;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    padding: 3px 10px;
-    border-radius: 20px;
-    background: var(--teal-light);
-    color: var(--teal);
-    margin-bottom: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.48rem; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.15);
+    padding: 1px 5px; border-radius: 3px; margin-bottom: 3px;
   }
 
-  .project-card h3 {
-    font-size: 1.15rem;
-    font-weight: 600;
-    margin-bottom: 6px;
+  .book-label .label-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.62rem; font-weight: 600; color: #fff; line-height: 1.3;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
   }
 
-  .project-card p {
-    font-size: 0.88rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
+  /* ── Meta info ── */
+  .book-meta { padding: 6px 2px 0; }
+
+  .book-meta .meta-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem; font-weight: 500; color: var(--text);
+    line-height: 1.3; margin-bottom: 3px;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
   }
 
-  .project-card .arrow {
-    float: right;
-    margin-top: -28px;
-    font-size: 1.2rem;
-    color: var(--amber);
-    transition: transform 0.2s;
+  .book-meta .meta-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.56rem; color: var(--text-muted); line-height: 1.5;
   }
 
-  .project-card:hover .arrow {
-    transform: translateX(4px);
-    color: var(--teal);
+  .book-meta .meta-row .meta-location { text-align: right; flex-shrink: 0; }
+
+  .book-meta .meta-edited {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.54rem; color: var(--text-muted); opacity: 0.7; line-height: 1.5;
   }
 
-  /* ── Coming Soon Card ── */
-  .coming-soon {
+  /* ── Placeholder slots ── */
+  .book-card.placeholder { cursor: pointer; }
+
+  .book-card.placeholder .book-cover {
+    border: 1.5px dashed var(--border);
     background: var(--amber-light);
-    border: 1px dashed var(--border);
-    border-radius: var(--radius);
-    padding: 24px 32px;
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.88rem;
+    box-shadow: none;
+    transition: border-color 0.2s, background 0.2s;
   }
+
+  .book-card.placeholder:hover .book-cover {
+    border-color: var(--teal); background: var(--teal-light);
+  }
+
+  .book-card.placeholder .book-cover::before,
+  .book-card.placeholder .book-cover::after { display: none; }
+
+  .book-card.placeholder .book-thumbnail { background: transparent; }
+
+  .book-card.placeholder .placeholder-icon {
+    font-size: 1.2rem; color: var(--amber); opacity: 0.5;
+    transition: color 0.2s, opacity 0.2s;
+  }
+
+  .book-card.placeholder:hover .placeholder-icon {
+    color: var(--teal); opacity: 0.8;
+  }
+
+  /* ── Upload Modal ── */
+  .modal-overlay {
+    display: none; position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.35);
+    z-index: 1000;
+    align-items: center; justify-content: center;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal-box {
+    background: var(--card-bg);
+    border-radius: 16px; padding: 32px;
+    width: 440px; max-width: 90vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+
+  .modal-box h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem; font-weight: 600;
+    color: var(--text); margin-bottom: 18px;
+  }
+
+  /* ── Type Tabs ── */
+  .type-tabs {
+    display: flex; gap: 0;
+    margin-bottom: 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .type-tab {
+    flex: 1;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.76rem; font-weight: 500;
+    padding: 9px 0;
+    text-align: center;
+    cursor: pointer;
+    background: var(--bg);
+    color: var(--text-secondary);
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .type-tab + .type-tab { border-left: 1px solid var(--border); }
+
+  .type-tab.active {
+    background: var(--teal);
+    color: #fff;
+  }
+
+  .type-tab:not(.active):hover { background: var(--teal-light); }
+
+  .modal-field {
+    margin-bottom: 14px;
+  }
+
+  .modal-field label {
+    display: block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem; font-weight: 500;
+    color: var(--text-secondary); margin-bottom: 6px;
+  }
+
+  .modal-field input[type="text"],
+  .modal-field select {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem; padding: 8px 12px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--text);
+    outline: none; transition: border-color 0.2s;
+  }
+
+  .modal-field input:focus,
+  .modal-field select:focus { border-color: var(--teal); }
+
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px; padding: 28px;
+    text-align: center; cursor: pointer;
+    transition: all 0.2s; margin-bottom: 14px;
+  }
+
+  .drop-zone:hover,
+  .drop-zone.dragover {
+    border-color: var(--teal); background: var(--teal-light);
+  }
+
+  .drop-zone p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem; color: var(--text-secondary);
+  }
+
+  .drop-zone .file-name {
+    font-weight: 600; color: var(--teal); margin-top: 6px;
+  }
+
+  .modal-actions {
+    display: flex; gap: 10px;
+    justify-content: flex-end; margin-top: 20px;
+  }
+
+  .modal-actions button {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem; font-weight: 500;
+    padding: 8px 20px; border-radius: 8px;
+    cursor: pointer; transition: all 0.2s; border: none;
+  }
+
+  .btn-cancel {
+    background: var(--bg); color: var(--text-secondary);
+    border: 1px solid var(--border) !important;
+  }
+  .btn-cancel:hover { background: #f0edea; }
+
+  .btn-submit { background: var(--teal); color: #fff; }
+  .btn-submit:hover { background: var(--teal-dark); }
+  .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Conditional sections inside modal */
+  .upload-section { display: none; }
+  .upload-section.active { display: block; }
 
   /* ── Footer ── */
   footer {
-    text-align: center;
-    padding: 32px 24px;
-    font-size: 0.78rem;
-    color: var(--text-secondary);
+    max-width: 1200px; margin: 0 auto;
+    text-align: center; padding: 28px 40px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem; color: var(--text-secondary);
     border-top: 1px solid var(--border);
   }
+  footer a { color: var(--teal); text-decoration: none; }
 
-  footer a {
-    color: var(--teal);
-    text-decoration: none;
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .projects-grid { grid-template-columns: repeat(4, 1fr); }
   }
-
-  /* ── Mobile ── */
-  @media (max-width: 639px) {
-    .hero { padding: 56px 20px 32px; }
-    .hero-title { font-size: 2rem; }
-    .story-dropdown { padding: 0 20px; }
-    .story-box { padding: 22px 24px; }
-    .story-text { font-size: 0.85rem; }
-    .projects { padding: 0 20px 60px; }
-    .project-card { padding: 22px 24px; }
+  @media (max-width: 768px) {
+    .hero, .projects, footer { padding-left: 24px; padding-right: 24px; }
+    .projects-grid { grid-template-columns: repeat(3, 1fr); gap: 36px 24px; }
+    .floating-logo { width: 36px; height: 36px; }
+  }
+  @media (max-width: 480px) {
+    .hero { padding: 40px 20px 18px; }
+    .hero-title { font-size: 1.5rem; }
+    .projects { padding: 0 16px 60px; }
+    .projects-grid { grid-template-columns: repeat(2, 1fr); gap: 28px 18px; }
+    .book-label .label-title { font-size: 0.56rem; }
+    .book-meta .meta-name { font-size: 0.62rem; }
+    .floating-logo { width: 28px; height: 28px; }
   }
 </style>
 </head>
 <body>
 
   <section class="hero">
+    <!-- Floating logos behind title -->
+    <div class="logo-field" id="logoField"></div>
+
     <h1 class="hero-title" id="titleToggle" onclick="toggleStory()">
       One In A Million
       <span class="hint">tap to discover</span>
@@ -244,38 +553,456 @@
     <div class="story-box">
       <p class="story-subtitle">O, I AM……</p>
       <div class="story-text">
-        她叫<span class="name">陈婉仪</span>。One 谐音「婉」，一 谐音「仪」——万里挑一，是她藏在自己名字里的小小好意头。这四个字也恰好是一首歌的名字：TWICE 的 <span class="song">ONE IN A MILLION</span>，一种关于「被选中」的概念。那首歌在大学最不确定的日子里反复循环，后来又带着她坐进了来香港后的第一场演唱会。于是，这个名字就留下来了——既是她自己，也是那段被音乐撑住的时光。这个小站，用来存放她在技术路上每一步认真走过的脚印。
+        她叫<span class="name">陈婉仪</span>。One 谐音「婉」，一 谐音「仪」——万里挑一，是她藏在自己名字里的小小好意头。这也恰好是一首歌的名字：TWICE 的 <span class="song">ONE IN A MILLION</span>，一种关于「被选中」的概念。那首歌在大学最不确定的日子里反复循环，后来又带着她坐进了来香港后的第一场演唱会。于是，这个名字就留下来了——既是她自己，也是那段被音乐撑住的时光。这个小站，用来存放她在技术路上每一步认真走过的脚印。
       </div>
     </div>
   </div>
 
   <div class="divider"></div>
 
-  <script>
-    function toggleStory() {
-      document.getElementById('storyDropdown').classList.toggle('open');
-      document.getElementById('titleToggle').classList.toggle('expanded');
-    }
-  </script>
-
   <section class="projects">
-    <p class="section-label">Projects</p>
-
-    <a class="project-card" href="projects/cms-walkthrough/index.html">
-      <span class="card-tag">INTERNSHIP</span>
-      <h3>Lead Scraper CMS 前端框架教学</h3>
-      <p>React + TypeScript + Vite 全栈 CMS 系统的代码架构、数据流与认证机制完整解析。</p>
-      <span class="arrow">→</span>
-    </a>
-
-    <div class="coming-soon">
-      更多项目正在路上 ✦
+    <div class="section-header">
+      <p class="section-label">Projects</p>
+      <button class="upload-btn" onclick="openUploadModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload
+      </button>
     </div>
+
+    <div class="projects-grid" id="projectsGrid"></div>
   </section>
 
   <footer>
     Built with care by 婉仪 · <a href="https://github.com/evachenwanyi02">GitHub</a>
   </footer>
+
+  <!-- Upload Modal — dual mode -->
+  <div class="modal-overlay" id="uploadModal">
+    <div class="modal-box">
+      <h3>Upload</h3>
+
+      <!-- Type tabs -->
+      <div class="type-tabs">
+        <button class="type-tab active" onclick="switchUploadType('html')">HTML Project</button>
+        <button class="type-tab" onclick="switchUploadType('logo')">Logo</button>
+      </div>
+
+      <!-- Drop zone (shared) -->
+      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <p id="dropText">Drag & drop file here, or click to browse</p>
+      </div>
+      <input type="file" id="fileInput" accept=".html,.htm">
+
+      <!-- HTML-specific fields -->
+      <div class="upload-section active" id="htmlFields">
+        <div class="modal-field">
+          <label>Project Name</label>
+          <input type="text" id="projectName" placeholder="e.g. My Awesome Project">
+        </div>
+        <div class="modal-field">
+          <label>Tag</label>
+          <input type="text" id="projectTag" placeholder="e.g. INTERNSHIP, PERSONAL" value="PROJECT">
+        </div>
+        <div class="modal-field">
+          <label>Location</label>
+          <select id="projectLocation">
+            <option value="Hong Kong">Hong Kong</option>
+            <option value="Shenzhen">Shenzhen</option>
+            <option value="Guangzhou">Guangzhou</option>
+            <option value="Beijing">Beijing</option>
+            <option value="Shanghai">Shanghai</option>
+            <option value="Remote">Remote</option>
+            <option value="Other">Other...</option>
+          </select>
+        </div>
+        <div class="modal-field" id="customLocationField" style="display:none;">
+          <label>Custom Location</label>
+          <input type="text" id="customLocation" placeholder="Enter location">
+        </div>
+      </div>
+
+      <!-- Logo-specific fields -->
+      <div class="upload-section" id="logoFields">
+        <div class="modal-field">
+          <label>Organization Name</label>
+          <input type="text" id="logoName" placeholder="e.g. CUHK, Tencent">
+        </div>
+        <div class="modal-field">
+          <label>Type</label>
+          <select id="logoType">
+            <option value="university">University</option>
+            <option value="company">Company</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeUploadModal()">Cancel</button>
+        <button class="btn-submit" id="btnSubmit" onclick="handleUpload()" disabled>Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const GRID_COLS = 6;
+    const GRID_ROWS = 9;
+    const TOTAL_SLOTS = GRID_COLS * GRID_ROWS;
+
+    let projectsData = [];
+    let logosData = [];
+    let currentUploadType = 'html';
+
+    // ══════════════════════════════════════
+    //  Data Loading
+    // ══════════════════════════════════════
+
+    async function loadProjects() {
+      try {
+        const r = await fetch('projects.json?t=' + Date.now());
+        projectsData = await r.json();
+      } catch (e) { projectsData = []; }
+      renderGrid();
+    }
+
+    async function loadLogos() {
+      try {
+        const r = await fetch('logos.json?t=' + Date.now());
+        logosData = await r.json();
+      } catch (e) { logosData = []; }
+      renderFloatingLogos();
+    }
+
+    // ══════════════════════════════════════
+    //  Floating Logos Animation
+    // ══════════════════════════════════════
+
+    function renderFloatingLogos() {
+      const field = document.getElementById('logoField');
+      field.innerHTML = '';
+      if (logosData.length === 0) return;
+
+      const heroRect = field.parentElement.getBoundingClientRect();
+      const usableW = heroRect.width - 80;
+      const usableH = heroRect.height - 40;
+
+      logosData.forEach(function(logo, i) {
+        const img = document.createElement('img');
+        img.src = logo.src;
+        img.alt = logo.name;
+        img.className = 'floating-logo';
+        img.draggable = false;
+
+        // Distribute logos in a scattered layout
+        const cols = Math.min(logosData.length, 6);
+        const row = Math.floor(i / cols);
+        const col = i % cols;
+        const cellW = usableW / cols;
+        const cellH = usableH / Math.ceil(logosData.length / cols);
+
+        // Jitter within cell
+        const jX = (Math.random() - 0.5) * cellW * 0.5;
+        const jY = (Math.random() - 0.5) * cellH * 0.4;
+        const baseX = 40 + col * cellW + cellW / 2 - 26 + jX;
+        const baseY = 20 + row * cellH + cellH / 2 - 26 + jY;
+
+        img.style.left = baseX + 'px';
+        img.style.top = baseY + 'px';
+
+        // Random animation params
+        const floatAmp = 6 + Math.random() * 6;        // 6-12px amplitude (subtle)
+        const floatPeriod = 3000 + Math.random() * 3000; // 3-6s period
+        const opacityMin = 0.20;
+        const opacityMax = 0.50;
+        const opacityPeriod = 4000 + Math.random() * 4000; // 4-8s
+        const phaseOffset = Math.random() * Math.PI * 2;
+        const opacityPhase = Math.random() * Math.PI * 2;
+
+        field.appendChild(img);
+
+        // Animate with requestAnimationFrame
+        // Using sin() gives natural ease at endpoints (deceleration at peaks)
+        function animate(time) {
+          // Float: sin gives smooth deceleration at top/bottom (endpoints)
+          const floatProgress = Math.sin(time / floatPeriod * Math.PI * 2 + phaseOffset);
+          const yOffset = floatProgress * floatAmp;
+
+          // Opacity: oscillate between 20-50%
+          const opacityProgress = Math.sin(time / opacityPeriod * Math.PI * 2 + opacityPhase);
+          const opacity = opacityMin + (opacityMax - opacityMin) * (opacityProgress * 0.5 + 0.5);
+
+          img.style.transform = 'translateY(' + yOffset + 'px)';
+          img.style.opacity = opacity;
+
+          requestAnimationFrame(animate);
+        }
+
+        requestAnimationFrame(animate);
+      });
+    }
+
+    // Re-layout on resize
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(renderFloatingLogos, 200);
+    });
+
+    // ══════════════════════════════════════
+    //  Projects Grid
+    // ══════════════════════════════════════
+
+    function fmtDate(isoStr) {
+      const d = new Date(isoStr);
+      const day = d.getDate();
+      const month = d.getMonth() + 1;
+      const year = String(d.getFullYear()).slice(-2);
+      let hours = d.getHours();
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      return day + '/' + month + '/' + year + ' ' + hours + ':' + minutes + ampm;
+    }
+
+    function getSizeClass(size) {
+      if (size === 'sm' || size === 'md' || size === 'lg') return size;
+      if (typeof size === 'number') {
+        if (size < 5000) return 'sm';
+        if (size < 20000) return 'md';
+        return 'lg';
+      }
+      return 'md';
+    }
+
+    function getDocLineCount(size) {
+      var s = getSizeClass(size);
+      return s === 'sm' ? 4 : s === 'md' ? 6 : 8;
+    }
+
+    function renderGrid() {
+      var grid = document.getElementById('projectsGrid');
+      var html = '';
+
+      for (var i = 0; i < TOTAL_SLOTS; i++) {
+        if (i < projectsData.length) {
+          var p = projectsData[i];
+          var sc = getSizeClass(p.size);
+          var lc = getDocLineCount(p.size);
+          var lines = '';
+          for (var l = 0; l < lc; l++) lines += '<span></span>';
+
+          var meta = '<div class="meta-name">' + escHtml(p.name) + '</div>'
+            + '<div class="meta-row">'
+            + '<span>' + fmtDate(p.createdAt) + '</span>'
+            + '<span class="meta-location">' + escHtml(p.location) + '</span>'
+            + '</div>';
+          if (p.editedAt) {
+            meta += '<div class="meta-edited">Edited at ' + fmtDate(p.editedAt) + '</div>';
+          }
+
+          html += '<a class="book-card" href="' + escHtml(p.href) + '">'
+            + '<div class="book-cover"><div class="book-spine"></div>'
+            + '<div class="book-thumbnail"><div class="doc-lines">' + lines + '</div>'
+            + '<div class="size-indicator size-' + sc + '"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>'
+            + '</div>'
+            + '<div class="book-label"><span class="label-tag">' + escHtml(p.tag) + '</span>'
+            + '<div class="label-title">' + escHtml(p.name) + '</div></div>'
+            + '</div><div class="book-meta">' + meta + '</div></a>';
+        } else {
+          html += '<div class="book-card placeholder" onclick="openUploadModal()">'
+            + '<div class="book-cover"><div class="book-thumbnail">'
+            + '<span class="placeholder-icon">+</span></div></div></div>';
+        }
+      }
+      grid.innerHTML = html;
+    }
+
+    function escHtml(str) {
+      var d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    // ══════════════════════════════════════
+    //  Story Toggle
+    // ══════════════════════════════════════
+
+    function toggleStory() {
+      document.getElementById('storyDropdown').classList.toggle('open');
+      document.getElementById('titleToggle').classList.toggle('expanded');
+    }
+
+    // ══════════════════════════════════════
+    //  Upload Modal — dual mode
+    // ══════════════════════════════════════
+
+    var pendingFile = null;
+
+    function switchUploadType(type) {
+      currentUploadType = type;
+      // Update tabs
+      document.querySelectorAll('.type-tab').forEach(function(t, i) {
+        t.classList.toggle('active', (i === 0 && type === 'html') || (i === 1 && type === 'logo'));
+      });
+      // Show/hide sections
+      document.getElementById('htmlFields').classList.toggle('active', type === 'html');
+      document.getElementById('logoFields').classList.toggle('active', type === 'logo');
+      // Update file input accept
+      document.getElementById('fileInput').accept = type === 'html' ? '.html,.htm' : '.png,.jpg,.jpeg,.svg,.webp';
+      // Update drop text
+      document.getElementById('dropText').textContent = type === 'html'
+        ? 'Drag & drop your .html file here, or click to browse'
+        : 'Drag & drop logo image here, or click to browse';
+      // Reset file
+      pendingFile = null;
+      document.getElementById('btnSubmit').disabled = true;
+      document.getElementById('fileInput').value = '';
+    }
+
+    function openUploadModal() {
+      document.getElementById('uploadModal').classList.add('active');
+      resetModal();
+    }
+
+    function closeUploadModal() {
+      document.getElementById('uploadModal').classList.remove('active');
+      resetModal();
+    }
+
+    function resetModal() {
+      pendingFile = null;
+      currentUploadType = 'html';
+      switchUploadType('html');
+      document.getElementById('projectName').value = '';
+      document.getElementById('projectTag').value = 'PROJECT';
+      document.getElementById('projectLocation').value = 'Hong Kong';
+      document.getElementById('customLocationField').style.display = 'none';
+      document.getElementById('logoName').value = '';
+      document.getElementById('logoType').value = 'university';
+      document.getElementById('btnSubmit').disabled = true;
+      document.getElementById('fileInput').value = '';
+    }
+
+    document.getElementById('projectLocation').addEventListener('change', function() {
+      document.getElementById('customLocationField').style.display =
+        this.value === 'Other' ? 'block' : 'none';
+    });
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      if (e.target.files.length > 0) handleFileSelect(e.target.files[0]);
+    });
+
+    var dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', function() { this.classList.remove('dragover'); });
+    dropZone.addEventListener('drop', function(e) {
+      e.preventDefault(); this.classList.remove('dragover');
+      if (e.dataTransfer.files.length > 0) handleFileSelect(e.dataTransfer.files[0]);
+    });
+
+    function handleFileSelect(file) {
+      if (currentUploadType === 'html') {
+        if (!file.name.match(/\.html?$/i)) { alert('Please select an .html file'); return; }
+      } else {
+        if (!file.name.match(/\.(png|jpe?g|svg|webp)$/i)) { alert('Please select an image file (png/jpg/svg/webp)'); return; }
+      }
+      pendingFile = file;
+      document.getElementById('dropText').innerHTML = '<span class="file-name">' + escHtml(file.name) + '</span>';
+      document.getElementById('btnSubmit').disabled = false;
+
+      if (currentUploadType === 'html' && !document.getElementById('projectName').value) {
+        document.getElementById('projectName').value = file.name.replace(/\.html?$/i, '').replace(/[-_]/g, ' ');
+      }
+      if (currentUploadType === 'logo' && !document.getElementById('logoName').value) {
+        document.getElementById('logoName').value = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+      }
+    }
+
+    function handleUpload() {
+      if (!pendingFile) return;
+
+      if (currentUploadType === 'html') {
+        handleHtmlUpload();
+      } else {
+        handleLogoUpload();
+      }
+    }
+
+    function handleHtmlUpload() {
+      var name = document.getElementById('projectName').value.trim() || pendingFile.name;
+      var tag = document.getElementById('projectTag').value.trim() || 'PROJECT';
+      var locSel = document.getElementById('projectLocation').value;
+      var location = locSel === 'Other'
+        ? (document.getElementById('customLocation').value.trim() || 'Unknown')
+        : locSel;
+
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var content = e.target.result;
+        var slug = name.toLowerCase().replace(/[^a-z0-9一-鿿]+/g, '-').replace(/^-|-$/g, '');
+        var idx = projectsData.findIndex(function(p) { return p.id === slug; });
+
+        if (idx >= 0) {
+          projectsData[idx].editedAt = new Date().toISOString();
+          projectsData[idx].size = content.length;
+        } else {
+          projectsData.push({
+            id: slug, name: name, tag: tag.toUpperCase(),
+            href: 'projects/' + slug + '.html',
+            createdAt: new Date().toISOString(),
+            editedAt: null, location: location, size: content.length
+          });
+        }
+
+        console.log('=== Update projects.json with: ===');
+        console.log(JSON.stringify(projectsData, null, 2));
+        closeUploadModal();
+        renderGrid();
+      };
+      reader.readAsText(pendingFile);
+    }
+
+    function handleLogoUpload() {
+      var name = document.getElementById('logoName').value.trim() || pendingFile.name;
+      var type = document.getElementById('logoType').value;
+      var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      var ext = pendingFile.name.split('.').pop().toLowerCase();
+
+      // Read as data URL for immediate preview
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var newLogo = {
+          id: slug,
+          name: name,
+          src: 'logos/' + slug + '.' + ext,
+          type: type
+        };
+
+        var idx = logosData.findIndex(function(l) { return l.id === slug; });
+        if (idx >= 0) {
+          logosData[idx] = newLogo;
+        } else {
+          logosData.push(newLogo);
+        }
+
+        console.log('=== Update logos.json with: ===');
+        console.log(JSON.stringify(logosData, null, 2));
+        console.log('=== Place image file at: logos/' + slug + '.' + ext + ' ===');
+
+        closeUploadModal();
+        renderFloatingLogos();
+      };
+      reader.readAsDataURL(pendingFile);
+    }
+
+    document.getElementById('uploadModal').addEventListener('click', function(e) {
+      if (e.target === this) closeUploadModal();
+    });
+
+    // ── Init ──
+    loadProjects();
+    loadLogos();
+  </script>
 
 </body>
 </html>
