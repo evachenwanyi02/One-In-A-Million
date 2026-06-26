@@ -171,32 +171,6 @@
     color: var(--text-secondary);
   }
 
-  /* ── Upload Button ── */
-  .upload-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 500;
-    color: var(--teal);
-    background: var(--teal-light);
-    border: 1px solid transparent;
-    border-radius: 20px;
-    padding: 6px 16px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .upload-btn:hover {
-    background: var(--teal);
-    color: #fff;
-  }
-
-  .upload-btn svg { width: 14px; height: 14px; }
-
-  #fileInput { display: none; }
-
   /* ── Projects Grid — 6 columns ── */
   .projects-grid {
     display: grid;
@@ -354,7 +328,7 @@
   }
 
   /* ── Placeholder slots ── */
-  .book-card.placeholder { cursor: pointer; }
+  .book-card.placeholder { cursor: default; }
 
   .book-card.placeholder .book-cover {
     border: 1.5px dashed var(--border);
@@ -380,132 +354,6 @@
   .book-card.placeholder:hover .placeholder-icon {
     color: var(--teal); opacity: 0.8;
   }
-
-  /* ── Upload Modal ── */
-  .modal-overlay {
-    display: none; position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.35);
-    z-index: 1000;
-    align-items: center; justify-content: center;
-  }
-
-  .modal-overlay.active { display: flex; }
-
-  .modal-box {
-    background: var(--card-bg);
-    border-radius: 16px; padding: 32px;
-    width: 440px; max-width: 90vw;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-  }
-
-  .modal-box h3 {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1rem; font-weight: 600;
-    color: var(--text); margin-bottom: 18px;
-  }
-
-  /* ── Type Tabs ── */
-  .type-tabs {
-    display: flex; gap: 0;
-    margin-bottom: 18px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .type-tab {
-    flex: 1;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.76rem; font-weight: 500;
-    padding: 9px 0;
-    text-align: center;
-    cursor: pointer;
-    background: var(--bg);
-    color: var(--text-secondary);
-    border: none;
-    transition: all 0.2s;
-  }
-
-  .type-tab + .type-tab { border-left: 1px solid var(--border); }
-
-  .type-tab.active {
-    background: var(--teal);
-    color: #fff;
-  }
-
-  .type-tab:not(.active):hover { background: var(--teal-light); }
-
-  .modal-field {
-    margin-bottom: 14px;
-  }
-
-  .modal-field label {
-    display: block;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.72rem; font-weight: 500;
-    color: var(--text-secondary); margin-bottom: 6px;
-  }
-
-  .modal-field input[type="text"],
-  .modal-field select {
-    width: 100%;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.82rem; padding: 8px 12px;
-    border: 1px solid var(--border); border-radius: 8px;
-    background: var(--bg); color: var(--text);
-    outline: none; transition: border-color 0.2s;
-  }
-
-  .modal-field input:focus,
-  .modal-field select:focus { border-color: var(--teal); }
-
-  .drop-zone {
-    border: 2px dashed var(--border);
-    border-radius: 12px; padding: 28px;
-    text-align: center; cursor: pointer;
-    transition: all 0.2s; margin-bottom: 14px;
-  }
-
-  .drop-zone:hover,
-  .drop-zone.dragover {
-    border-color: var(--teal); background: var(--teal-light);
-  }
-
-  .drop-zone p {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.78rem; color: var(--text-secondary);
-  }
-
-  .drop-zone .file-name {
-    font-weight: 600; color: var(--teal); margin-top: 6px;
-  }
-
-  .modal-actions {
-    display: flex; gap: 10px;
-    justify-content: flex-end; margin-top: 20px;
-  }
-
-  .modal-actions button {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.78rem; font-weight: 500;
-    padding: 8px 20px; border-radius: 8px;
-    cursor: pointer; transition: all 0.2s; border: none;
-  }
-
-  .btn-cancel {
-    background: var(--bg); color: var(--text-secondary);
-    border: 1px solid var(--border) !important;
-  }
-  .btn-cancel:hover { background: #f0edea; }
-
-  .btn-submit { background: var(--teal); color: #fff; }
-  .btn-submit:hover { background: var(--teal-dark); }
-  .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  /* Conditional sections inside modal */
-  .upload-section { display: none; }
-  .upload-section.active { display: block; }
 
   /* ── Footer ── */
   footer {
@@ -563,10 +411,6 @@
   <section class="projects">
     <div class="section-header">
       <p class="section-label">Projects</p>
-      <button class="upload-btn" onclick="openUploadModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Upload
-      </button>
     </div>
 
     <div class="projects-grid" id="projectsGrid"></div>
@@ -576,73 +420,6 @@
     Built with care by 婉仪 · <a href="https://github.com/evachenwanyi02">GitHub</a>
   </footer>
 
-  <!-- Upload Modal — dual mode -->
-  <div class="modal-overlay" id="uploadModal">
-    <div class="modal-box">
-      <h3>Upload</h3>
-
-      <!-- Type tabs -->
-      <div class="type-tabs">
-        <button class="type-tab active" onclick="switchUploadType('html')">HTML Project</button>
-        <button class="type-tab" onclick="switchUploadType('logo')">Logo</button>
-      </div>
-
-      <!-- Drop zone (shared) -->
-      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <p id="dropText">Drag & drop file here, or click to browse</p>
-      </div>
-      <input type="file" id="fileInput" accept=".html,.htm">
-
-      <!-- HTML-specific fields -->
-      <div class="upload-section active" id="htmlFields">
-        <div class="modal-field">
-          <label>Project Name</label>
-          <input type="text" id="projectName" placeholder="e.g. My Awesome Project">
-        </div>
-        <div class="modal-field">
-          <label>Tag</label>
-          <input type="text" id="projectTag" placeholder="e.g. INTERNSHIP, PERSONAL" value="PROJECT">
-        </div>
-        <div class="modal-field">
-          <label>Location</label>
-          <select id="projectLocation">
-            <option value="Hong Kong">Hong Kong</option>
-            <option value="Shenzhen">Shenzhen</option>
-            <option value="Guangzhou">Guangzhou</option>
-            <option value="Beijing">Beijing</option>
-            <option value="Shanghai">Shanghai</option>
-            <option value="Remote">Remote</option>
-            <option value="Other">Other...</option>
-          </select>
-        </div>
-        <div class="modal-field" id="customLocationField" style="display:none;">
-          <label>Custom Location</label>
-          <input type="text" id="customLocation" placeholder="Enter location">
-        </div>
-      </div>
-
-      <!-- Logo-specific fields -->
-      <div class="upload-section" id="logoFields">
-        <div class="modal-field">
-          <label>Organization Name</label>
-          <input type="text" id="logoName" placeholder="e.g. CUHK, Tencent">
-        </div>
-        <div class="modal-field">
-          <label>Type</label>
-          <select id="logoType">
-            <option value="university">University</option>
-            <option value="company">Company</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn-cancel" onclick="closeUploadModal()">Cancel</button>
-        <button class="btn-submit" id="btnSubmit" onclick="handleUpload()" disabled>Upload</button>
-      </div>
-    </div>
-  </div>
 
   <script>
     const GRID_COLS = 6;
@@ -651,7 +428,6 @@
 
     let projectsData = [];
     let logosData = [];
-    let currentUploadType = 'html';
 
     // ══════════════════════════════════════
     //  Data Loading
@@ -809,7 +585,7 @@
             + '<div class="label-title">' + escHtml(p.name) + '</div></div>'
             + '</div><div class="book-meta">' + meta + '</div></a>';
         } else {
-          html += '<div class="book-card placeholder" onclick="openUploadModal()">'
+          html += '<div class="book-card placeholder">'
             + '<div class="book-cover"><div class="book-thumbnail">'
             + '<span class="placeholder-icon">+</span></div></div></div>';
         }
@@ -831,173 +607,6 @@
       document.getElementById('storyDropdown').classList.toggle('open');
       document.getElementById('titleToggle').classList.toggle('expanded');
     }
-
-    // ══════════════════════════════════════
-    //  Upload Modal — dual mode
-    // ══════════════════════════════════════
-
-    var pendingFile = null;
-
-    function switchUploadType(type) {
-      currentUploadType = type;
-      // Update tabs
-      document.querySelectorAll('.type-tab').forEach(function(t, i) {
-        t.classList.toggle('active', (i === 0 && type === 'html') || (i === 1 && type === 'logo'));
-      });
-      // Show/hide sections
-      document.getElementById('htmlFields').classList.toggle('active', type === 'html');
-      document.getElementById('logoFields').classList.toggle('active', type === 'logo');
-      // Update file input accept
-      document.getElementById('fileInput').accept = type === 'html' ? '.html,.htm' : '.png,.jpg,.jpeg,.svg,.webp';
-      // Update drop text
-      document.getElementById('dropText').textContent = type === 'html'
-        ? 'Drag & drop your .html file here, or click to browse'
-        : 'Drag & drop logo image here, or click to browse';
-      // Reset file
-      pendingFile = null;
-      document.getElementById('btnSubmit').disabled = true;
-      document.getElementById('fileInput').value = '';
-    }
-
-    function openUploadModal() {
-      document.getElementById('uploadModal').classList.add('active');
-      resetModal();
-    }
-
-    function closeUploadModal() {
-      document.getElementById('uploadModal').classList.remove('active');
-      resetModal();
-    }
-
-    function resetModal() {
-      pendingFile = null;
-      currentUploadType = 'html';
-      switchUploadType('html');
-      document.getElementById('projectName').value = '';
-      document.getElementById('projectTag').value = 'PROJECT';
-      document.getElementById('projectLocation').value = 'Hong Kong';
-      document.getElementById('customLocationField').style.display = 'none';
-      document.getElementById('logoName').value = '';
-      document.getElementById('logoType').value = 'university';
-      document.getElementById('btnSubmit').disabled = true;
-      document.getElementById('fileInput').value = '';
-    }
-
-    document.getElementById('projectLocation').addEventListener('change', function() {
-      document.getElementById('customLocationField').style.display =
-        this.value === 'Other' ? 'block' : 'none';
-    });
-
-    document.getElementById('fileInput').addEventListener('change', function(e) {
-      if (e.target.files.length > 0) handleFileSelect(e.target.files[0]);
-    });
-
-    var dropZone = document.getElementById('dropZone');
-    dropZone.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('dragover'); });
-    dropZone.addEventListener('dragleave', function() { this.classList.remove('dragover'); });
-    dropZone.addEventListener('drop', function(e) {
-      e.preventDefault(); this.classList.remove('dragover');
-      if (e.dataTransfer.files.length > 0) handleFileSelect(e.dataTransfer.files[0]);
-    });
-
-    function handleFileSelect(file) {
-      if (currentUploadType === 'html') {
-        if (!file.name.match(/\.html?$/i)) { alert('Please select an .html file'); return; }
-      } else {
-        if (!file.name.match(/\.(png|jpe?g|svg|webp)$/i)) { alert('Please select an image file (png/jpg/svg/webp)'); return; }
-      }
-      pendingFile = file;
-      document.getElementById('dropText').innerHTML = '<span class="file-name">' + escHtml(file.name) + '</span>';
-      document.getElementById('btnSubmit').disabled = false;
-
-      if (currentUploadType === 'html' && !document.getElementById('projectName').value) {
-        document.getElementById('projectName').value = file.name.replace(/\.html?$/i, '').replace(/[-_]/g, ' ');
-      }
-      if (currentUploadType === 'logo' && !document.getElementById('logoName').value) {
-        document.getElementById('logoName').value = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
-      }
-    }
-
-    function handleUpload() {
-      if (!pendingFile) return;
-
-      if (currentUploadType === 'html') {
-        handleHtmlUpload();
-      } else {
-        handleLogoUpload();
-      }
-    }
-
-    function handleHtmlUpload() {
-      var name = document.getElementById('projectName').value.trim() || pendingFile.name;
-      var tag = document.getElementById('projectTag').value.trim() || 'PROJECT';
-      var locSel = document.getElementById('projectLocation').value;
-      var location = locSel === 'Other'
-        ? (document.getElementById('customLocation').value.trim() || 'Unknown')
-        : locSel;
-
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var content = e.target.result;
-        var slug = name.toLowerCase().replace(/[^a-z0-9一-鿿]+/g, '-').replace(/^-|-$/g, '');
-        var idx = projectsData.findIndex(function(p) { return p.id === slug; });
-
-        if (idx >= 0) {
-          projectsData[idx].editedAt = new Date().toISOString();
-          projectsData[idx].size = content.length;
-        } else {
-          projectsData.push({
-            id: slug, name: name, tag: tag.toUpperCase(),
-            href: 'projects/' + slug + '.html',
-            createdAt: new Date().toISOString(),
-            editedAt: null, location: location, size: content.length
-          });
-        }
-
-        console.log('=== Update projects.json with: ===');
-        console.log(JSON.stringify(projectsData, null, 2));
-        closeUploadModal();
-        renderGrid();
-      };
-      reader.readAsText(pendingFile);
-    }
-
-    function handleLogoUpload() {
-      var name = document.getElementById('logoName').value.trim() || pendingFile.name;
-      var type = document.getElementById('logoType').value;
-      var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      var ext = pendingFile.name.split('.').pop().toLowerCase();
-
-      // Read as data URL for immediate preview
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var newLogo = {
-          id: slug,
-          name: name,
-          src: 'logos/' + slug + '.' + ext,
-          type: type
-        };
-
-        var idx = logosData.findIndex(function(l) { return l.id === slug; });
-        if (idx >= 0) {
-          logosData[idx] = newLogo;
-        } else {
-          logosData.push(newLogo);
-        }
-
-        console.log('=== Update logos.json with: ===');
-        console.log(JSON.stringify(logosData, null, 2));
-        console.log('=== Place image file at: logos/' + slug + '.' + ext + ' ===');
-
-        closeUploadModal();
-        renderFloatingLogos();
-      };
-      reader.readAsDataURL(pendingFile);
-    }
-
-    document.getElementById('uploadModal').addEventListener('click', function(e) {
-      if (e.target === this) closeUploadModal();
-    });
 
     // ── Init ──
     loadProjects();
