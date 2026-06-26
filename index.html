@@ -442,9 +442,27 @@
     }
 
     async function loadLogos() {
+      const IMAGE_EXTS = ['png', 'jpg', 'jpeg', 'svg', 'webp', 'gif'];
       try {
-        const r = await fetch('logos.json?t=' + Date.now());
-        logosData = await r.json();
+        const r = await fetch('https://api.github.com/repos/evachenwanyi02/One-In-A-Million/contents/logos');
+        const files = await r.json();
+        if (Array.isArray(files)) {
+          logosData = files
+            .filter(function(f) {
+              var ext = f.name.split('.').pop().toLowerCase();
+              return f.type === 'file' && IMAGE_EXTS.indexOf(ext) >= 0;
+            })
+            .map(function(f) {
+              var namePart = f.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+              return {
+                id: f.name.replace(/\.[^.]+$/, '').toLowerCase(),
+                name: namePart,
+                src: 'logos/' + f.name
+              };
+            });
+        } else {
+          logosData = [];
+        }
       } catch (e) { logosData = []; }
       renderFloatingLogos();
     }
