@@ -44,42 +44,65 @@
     font-weight: 300;
     letter-spacing: 0.12em;
     color: var(--teal);
-    margin-bottom: 6px;
-  }
-
-  .hero-abbr {
-    font-size: 0.95rem;
-    font-weight: 500;
-    letter-spacing: 0.25em;
-    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.2s;
+    user-select: none;
     margin-bottom: 48px;
   }
 
-  /* ── Story ── */
-  .story {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 0 24px 56px;
+  .hero-title:hover { color: #4a8a94; }
+
+  .hero-title .hint {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    margin-top: 8px;
+    transition: opacity 0.3s;
+  }
+
+  .hero-title.expanded .hint { opacity: 0; }
+
+  /* ── Story Dropdown ── */
+  .story-dropdown {
+    max-width: 560px;
+    margin: -20px auto 0;
+    padding: 0 24px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.5s ease, opacity 0.4s ease, margin 0.4s ease;
+  }
+
+  .story-dropdown.open {
+    max-height: 400px;
+    opacity: 1;
+    margin-bottom: 16px;
+  }
+
+  .story-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+  }
+
+  .story-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: var(--teal);
+    margin-bottom: 16px;
   }
 
   .story-text {
     font-family: 'Noto Serif SC', serif;
-    font-size: 1rem;
+    font-size: 0.92rem;
     line-height: 2;
     color: var(--text-secondary);
     text-align: justify;
-    position: relative;
-  }
-
-  .story-text::before {
-    content: '"';
-    font-family: 'Noto Serif SC', serif;
-    font-size: 4rem;
-    color: var(--amber);
-    position: absolute;
-    top: -20px;
-    left: -8px;
-    line-height: 1;
   }
 
   .story-text .name {
@@ -200,8 +223,9 @@
   @media (max-width: 639px) {
     .hero { padding: 56px 20px 32px; }
     .hero-title { font-size: 2rem; }
-    .story { padding: 0 20px 40px; }
-    .story-text { font-size: 0.92rem; }
+    .story-dropdown { padding: 0 20px; }
+    .story-box { padding: 22px 24px; }
+    .story-text { font-size: 0.85rem; }
     .projects { padding: 0 20px 60px; }
     .project-card { padding: 22px 24px; }
   }
@@ -210,17 +234,29 @@
 <body>
 
   <section class="hero">
-    <h1 class="hero-title">One In A Million</h1>
-    <p class="hero-abbr">O, I AM</p>
+    <h1 class="hero-title" id="titleToggle" onclick="toggleStory()">
+      One In A Million
+      <span class="hint">tap to discover</span>
+    </h1>
   </section>
 
-  <section class="story">
-    <div class="story-text">
-      <span class="name">陈婉仪</span>，这是我的名字，也是这个网站名字的由来。One 谐音「婉」，一 谐音「仪」——万里挑一，是我给自己名字的一种好意头。它也是我喜欢的女团 TWICE 的一种概念，一首叫 <span class="song">ONE IN A MILLION</span> 的歌，陪我走过大学最迷茫的那段日子，也带我去了来香港后的第一场演唱会。这个小站，用来记录我在技术路上每一步认真走过的脚印。
+  <div class="story-dropdown" id="storyDropdown">
+    <div class="story-box">
+      <p class="story-subtitle">O, I AM……</p>
+      <div class="story-text">
+        她叫<span class="name">陈婉仪</span>。One 谐音「婉」，一 谐音「仪」——万里挑一，是她藏在自己名字里的小小好意头。这四个字也恰好是一首歌的名字：TWICE 的 <span class="song">ONE IN A MILLION</span>，一种关于「被选中」的概念。那首歌在大学最不确定的日子里反复循环，后来又带着她坐进了来香港后的第一场演唱会。于是，这个名字就留下来了——既是她自己，也是那段被音乐撑住的时光。这个小站，用来存放她在技术路上每一步认真走过的脚印。
+      </div>
     </div>
-  </section>
+  </div>
 
   <div class="divider"></div>
+
+  <script>
+    function toggleStory() {
+      document.getElementById('storyDropdown').classList.toggle('open');
+      document.getElementById('titleToggle').classList.toggle('expanded');
+    }
+  </script>
 
   <section class="projects">
     <p class="section-label">Projects</p>
