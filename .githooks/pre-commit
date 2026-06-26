@@ -1,0 +1,4 @@
+#!/bin/sh
+# Pre-commit hook: auto-sync projects/ → projects.json
+python3 "$(dirname "$0")/../sync.py"
+git add projects.json projects/
