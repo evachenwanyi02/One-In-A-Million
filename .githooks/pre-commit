@@ -1,4 +1,4 @@
 #!/bin/sh
-# Pre-commit hook: auto-sync projects/ → projects.json
+# Pre-commit hook: auto-sync projects/ and logos/ → JSON manifests
 python3 "$(dirname "$0")/../sync.py"
-git add projects.json projects/
+git add projects.json projects/ logos.json logos/
