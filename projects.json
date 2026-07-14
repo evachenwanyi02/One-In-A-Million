@@ -1,11 +1,21 @@
 [
   {
-    "id": "mad-mad-internship-前端代码框架教学",
-    "name": "Mad Mad Internship — 前端代码框架教学",
+    "id": "mad-mad-internship-hermes-項目全景解讀",
+    "name": "Mad Mad Internship — Hermes 項目全景解讀",
     "tag": "INTERNSHIP",
-    "href": "projects/mad-mad-internship-前端代码框架教学.html",
+    "href": "projects/mad-mad-internship-hermes-項目全景解讀.html",
     "createdAt": "2025-06-26T14:00:00",
-    "editedAt": "2026-06-26T17:48:41",
+    "editedAt": "2026-07-09T15:21:40",
+    "location": "Hong Kong",
+    "size": "lg"
+  },
+  {
+    "id": "moonlight-suits-me",
+    "name": "Moonlight Suits Me",
+    "tag": "PORTRAIT",
+    "href": "projects/moonlight-suits-me.html",
+    "createdAt": "2026-07-14T18:00:00",
+    "editedAt": "2026-07-14T18:00:00",
     "location": "Hong Kong",
     "size": "lg"
   }

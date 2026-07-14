@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mad Mad Internship — Hermes 項目全景解讀</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&display=swap');
+
+@page {
+  size: A4;
+  margin: 20mm 18mm;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  font-size: 13.5px;
+  line-height: 2;
+  color: #2c2c2c;
+  background: #fff;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 20mm 18mm;
+  letter-spacing: 0.01em;
+}
+
+/* ── 荧光标记 ── */
+.hl-y { background: linear-gradient(180deg, transparent 55%, #fff3a8 55%); padding: 0 2px; }
+.hl-p { background: linear-gradient(180deg, transparent 55%, #e8d5f5 55%); padding: 0 2px; }
+.hl-o { background: linear-gradient(180deg, transparent 55%, #ffd6b3 55%); padding: 0 2px; }
+.hl-g { background: linear-gradient(180deg, transparent 55%, #b8f0d0 55%); padding: 0 2px; }
+.hl-b { background: linear-gradient(180deg, transparent 55%, #bde0fe 55%); padding: 0 2px; }
+
+h1 {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 0.5em;
+  margin-top: 0;
+  line-height: 1.5;
+  color: #1a1a2e;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+.subtitle {
+  text-align: center;
+  color: #777;
+  font-size: 12.5px;
+  margin-bottom: 2em;
+  font-style: italic;
+}
+
+h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.6em;
+  padding: 6px 14px;
+  color: #fff;
+  line-height: 1.5;
+  page-break-before: always;
+  border-radius: 4px;
+}
+h2:first-of-type { page-break-before: avoid; }
+
+h2.part1 { background: #2563eb; }
+h2.part2 { background: #7a6b8a; }
+h2.part3 { background: #16a34a; }
+h2.part4 { background: #d97706; }
+h2.part5 { background: #dc2626; }
+h2.part6 { background: #5b7fa5; }
+
+h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 1.2em;
+  margin-bottom: 0.4em;
+  color: #3a3a3a;
+  line-height: 1.6;
+  border-left: 3px solid #ccc;
+  padding-left: 10px;
+}
+
+h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 1em;
+  margin-bottom: 0.3em;
+  color: #555;
+}
+
+p { margin-bottom: 0.8em; text-align: justify; }
+
+.intro-box {
+  background: #fafaf5;
+  border: 1px solid #e8e4d8;
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 1em 0;
+  font-size: 13px;
+  color: #555;
+  line-height: 2;
+}
+
+.tip-box {
+  background: #fffdf0;
+  border-left: 4px solid #e6c84d;
+  border-radius: 0 4px 4px 0;
+  padding: 10px 14px;
+  margin: 0.8em 0;
+  font-size: 12.5px;
+  color: #665a20;
+  line-height: 1.9;
+}
+
+.think-box {
+  background: #f5f0fa;
+  border-left: 4px solid #9b7fc4;
+  border-radius: 0 4px 4px 0;
+  padding: 10px 14px;
+  margin: 0.8em 0;
+  font-size: 12.5px;
+  color: #4a3a6a;
+  line-height: 1.9;
+  font-style: italic;
+}
+
+.diagram-box {
+  background: #fafbfc;
+  border: 1px solid #e4e8ec;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 1em 0;
+  text-align: center;
+  page-break-inside: avoid;
+}
+.diagram-box svg {
+  max-width: 100%;
+  height: auto;
+}
+.diagram-caption {
+  font-size: 11.5px;
+  color: #888;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+code {
+  font-family: "Source Code Pro", "Cascadia Code", "Fira Code", "JetBrains Mono", "Menlo", monospace;
+  font-size: 12px;
+  background: #f0f2f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #476582;
+}
+
+hr {
+  border: none;
+  border-top: 1px dashed #d0d0d0;
+  margin: 1.5em 0;
+}
+
+ol, ul { margin: 0.5em 0; padding-left: 2em; }
+li { margin-bottom: 0.4em; }
+
+strong { font-weight: 700; color: #2c2c2c; }
+
+blockquote {
+  border-left: 3px solid #d0d0d0;
+  padding-left: 14px;
+  color: #666;
+  margin: 0.8em 0;
+  font-style: italic;
+}
+
+.file-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.8em 0;
+  font-size: 12.5px;
+}
+.file-table th {
+  background: #f0f2f5;
+  text-align: left;
+  padding: 6px 10px;
+  border: 1px solid #e4e8ec;
+  font-weight: 600;
+  color: #555;
+}
+.file-table td {
+  padding: 5px 10px;
+  border: 1px solid #e4e8ec;
+  vertical-align: top;
+}
+
+@media print {
+  body { padding: 0; max-width: none; font-size: 12.5px; line-height: 1.9; }
+  h1 { font-size: 20px; }
+  h2 { font-size: 16px; page-break-before: always; page-break-after: avoid; }
+  h2:first-of-type { page-break-before: avoid; }
+  h3 { font-size: 13.5px; page-break-after: avoid; }
+  h4 { page-break-after: avoid; }
+  p { orphans: 3; widows: 3; }
+  hr { page-break-after: avoid; }
+  .tip-box, .think-box, .intro-box, .diagram-box { page-break-inside: avoid; }
+}
+
+@media screen {
+  html { background: #e8e4df; }
+  body {
+    padding: 40px 48px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+    margin-top: 24px;
+    margin-bottom: 24px;
+    border-radius: 2px;
+  }
+}
+</style>
+</head>
+<body>
+
+<h1>Hermes — B2B 自動化外展系統<br>項目全景解讀</h1>
+<p class="subtitle">Mad Mad Group · 2025 Summer Internship · 三人團隊全棧項目</p>
+
+<div class="intro-box">
+這份文件不講代碼語法，而是<strong>講清楚整個系統在做什麼、怎麼做、遇到了什麼難題、怎麼解決</strong>。讀完之後你能向任何人（面試官、客戶、技術主管）用三分鐘講明白這個項目的價值和架構。
+</div>
+
+<hr>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 class="part1">第一部分：這個系統解決什麼問題</h2>
+
+<p>MAD MAD Group 是一家香港公司，需要大量開發 B2B 客戶。傳統做法是人工在 Google Maps 上找商家、手動抄聯繫方式、逐一撰寫開發信、用 Gmail 一封一封寄出。一個銷售一天最多處理 20 家。</p>
+
+<p>Hermes 把這條流水線<span class="hl-y">全自動化</span>：</p>
+
+<ol>
+<li><strong>自動發現</strong> — 用瀏覽器代理（CUA）在 Google Maps 上按關鍵字 + 地區搜索商家</li>
+<li><strong>自動豐富</strong> — 訪問每家公司官網，提取聯繫郵箱、電話、服務範圍</li>
+<li><strong>AI 分析</strong> — 用大語言模型分析合作可能性，生成合作建議和切入角度</li>
+<li><strong>自動撰寫</strong> — AI 依據分析結果，為每家公司草擬個性化開發信</li>
+<li><strong>審批發送</strong> — 人工審核通過後，系統通過 SMTP 自動寄出</li>
+<li><strong>回覆追蹤</strong> — 定時檢查回覆，AI 分類回覆意向（有興趣 / 約時間 / 拒絕），推送通知</li>
+</ol>
+
+<p>一個人可以同時跑幾十條流水線，<span class="hl-y">一天觸達上百家潛在客戶</span>。系統保留「人工審批」環節，確保不會發出不當郵件。</p>
+
+<div class="tip-box">
+<strong>關鍵詞：</strong>Lead Scraper CMS、B2B 自動化外展（Automated Outreach）、人機協作（Human-in-the-Loop）
+</div>
+
+<hr>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 class="part2">第二部分：系統架構全景</h2>
+
+<h3>技術選型一覽</h3>
+
+<table class="file-table">
+<tr><th>層級</th><th>技術</th><th>選型理由</th></tr>
+<tr><td>前端</td><td>React 19 + TypeScript + Vite</td><td>組件化開發、類型安全、極速熱更新</td></tr>
+<tr><td>樣式</td><td>styled-components</td><td>CSS-in-JS 作用域隔離、動態主題切換（亮/暗色）</td></tr>
+<tr><td>狀態管理</td><td>TanStack Query + React Context</td><td>服務端狀態自動緩存 + 全局認證/主題狀態</td></tr>
+<tr><td>國際化</td><td>i18next（繁中/簡中/英文）</td><td>香港市場需要中英雙語</td></tr>
+<tr><td>後端</td><td>NestJS 11 + TypeScript</td><td>模塊化架構、依賴注入、裝飾器模式</td></tr>
+<tr><td>資料庫</td><td>MongoDB + Mongoose</td><td>Schema-free 適合快速迭代、與 Python 管線相容</td></tr>
+<tr><td>AI 模型</td><td>MiniMax-M3（via API）</td><td>中文能力強、兼容 OpenAI 接口格式</td></tr>
+<tr><td>瀏覽器代理</td><td>CUA（Computer Use Agent）</td><td>模擬真人操作 Google Maps、不被反爬蟲封鎖</td></tr>
+<tr><td>認證</td><td>JWT + bcrypt</td><td>無狀態認證、密碼安全散列</td></tr>
+<tr><td>實時通訊</td><td>SSE（Server-Sent Events）</td><td>單向推送、比 WebSocket 更輕量</td></tr>
+</table>
+
+<h3>最核心的架構決策：解耦編排</h3>
+
+<p>整個系統最重要的設計是：<span class="hl-y">NestJS 永遠不做重活</span>。所有 AI 推理、瀏覽器自動化、郵件發送都委託給外部的 Hermes Agent（Python Worker）。NestJS 只負責編排——往 MongoDB 的任務隊列裡放任務，Agent 自己認領、執行、回報結果。</p>
+
+<div class="diagram-box">
+<svg viewBox="0 0 560 220" xmlns="http://www.w3.org/2000/svg" font-family="'PingFang SC', system-ui, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#2563eb"/></marker>
+    <marker id="arr2" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#16a34a"/></marker>
+  </defs>
+
+  <!-- Frontend -->
+  <rect x="10" y="20" width="120" height="55" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="70" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb">前端 React</text>
+  <text x="70" y="58" text-anchor="middle" font-size="9" fill="#60a5fa">用戶操作界面</text>
+
+  <!-- NestJS -->
+  <rect x="170" y="20" width="120" height="55" rx="8" fill="#faf5ff" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="230" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3aed">NestJS 後端</text>
+  <text x="230" y="58" text-anchor="middle" font-size="9" fill="#a78bfa">API + 編排器</text>
+
+  <!-- MongoDB -->
+  <rect x="220" y="120" width="120" height="55" rx="8" fill="#fff7ed" stroke="#d97706" stroke-width="1.5"/>
+  <text x="280" y="142" text-anchor="middle" font-size="12" font-weight="700" fill="#d97706">MongoDB</text>
+  <text x="280" y="158" text-anchor="middle" font-size="9" fill="#f59e0b">任務隊列 + 數據存儲</text>
+
+  <!-- Agent -->
+  <rect x="400" y="20" width="140" height="55" rx="8" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="470" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#16a34a">Hermes Agent</text>
+  <text x="470" y="58" text-anchor="middle" font-size="9" fill="#4ade80">CUA + AI + SMTP</text>
+
+  <!-- External -->
+  <rect x="400" y="140" width="140" height="40" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="470" y="158" text-anchor="middle" font-size="10" fill="#16a34a">Google Maps / MiniMax / SMTP</text>
+
+  <!-- Arrows -->
+  <line x1="130" y1="48" x2="170" y2="48" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="150" y="42" text-anchor="middle" font-size="8" fill="#2563eb">REST</text>
+
+  <line x1="230" y1="75" x2="260" y2="120" stroke="#7c3aed" stroke-width="1.2" marker-end="url(#arr)"/>
+  <text x="232" y="100" font-size="8" fill="#7c3aed">寫入任務</text>
+
+  <line x1="340" y1="140" x2="400" y2="60" stroke="#16a34a" stroke-width="1.2" marker-end="url(#arr2)"/>
+  <text x="385" y="95" font-size="8" fill="#16a34a">認領任務</text>
+
+  <line x1="470" y1="75" x2="470" y2="140" stroke="#16a34a" stroke-width="1.2" marker-end="url(#arr2)"/>
+  <text x="488" y="110" font-size="8" fill="#16a34a">外部服務</text>
+
+  <!-- SSE arrow -->
+  <path d="M230,20 L230,5 L70,5 L70,20" fill="none" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <text x="150" y="14" text-anchor="middle" font-size="8" fill="#ef4444">SSE 實時推送</text>
+</svg>
+<div class="diagram-caption">NestJS 是編排器，不執行重活。Agent 通過 MongoDB 任務隊列與後端解耦，可獨立擴展。</div>
+</div>
+
+<p>這個設計的好處：NestJS 響應請求始終很快（不阻塞），Agent 可以在不同機器上部署多個實例來水平擴展，且 Agent 崩潰不會影響 Web 服務器。</p>
+
+<hr>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 class="part3">第三部分：五階段流水線 — 系統核心</h2>
+
+<p>當用戶在搜索頁輸入「瑜伽館 · 中環 · 找 5 家」並點擊搜索，系統啟動一條流水線（Campaign），經過五個階段自動完成整個外展流程：</p>
+
+<div class="diagram-box">
+<svg viewBox="0 0 560 180" xmlns="http://www.w3.org/2000/svg" font-family="'PingFang SC', system-ui, sans-serif">
+  <defs><marker id="a5" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#2563eb"/></marker></defs>
+
+  <!-- S1 -->
+  <rect x="10" y="30" width="90" height="65" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="55" y="50" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">S1 搜索</text>
+  <text x="55" y="65" text-anchor="middle" font-size="8.5" fill="#3b82f6">CUA 操控瀏覽器</text>
+  <text x="55" y="78" text-anchor="middle" font-size="8.5" fill="#3b82f6">在 Google Maps</text>
+  <text x="55" y="91" text-anchor="middle" font-size="8.5" fill="#3b82f6">抓取商家列表</text>
+
+  <line x1="100" y1="62" x2="120" y2="62" stroke="#2563eb" stroke-width="1.5" marker-end="url(#a5)"/>
+
+  <!-- S2 -->
+  <rect x="120" y="30" width="90" height="65" rx="8" fill="#f3e8ff" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="165" y="50" text-anchor="middle" font-size="11" font-weight="700" fill="#6d28d9">S2 豐富</text>
+  <text x="165" y="65" text-anchor="middle" font-size="8.5" fill="#8b5cf6">訪問公司官網</text>
+  <text x="165" y="78" text-anchor="middle" font-size="8.5" fill="#8b5cf6">提取郵箱/電話</text>
+  <text x="165" y="91" text-anchor="middle" font-size="8.5" fill="#8b5cf6">服務範圍</text>
+
+  <line x1="210" y1="62" x2="230" y2="62" stroke="#2563eb" stroke-width="1.5" marker-end="url(#a5)"/>
+
+  <!-- S2b -->
+  <rect x="230" y="30" width="90" height="65" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="275" y="50" text-anchor="middle" font-size="11" font-weight="700" fill="#b45309">S2 分析</text>
+  <text x="275" y="65" text-anchor="middle" font-size="8.5" fill="#d97706">AI 評估合作</text>
+  <text x="275" y="78" text-anchor="middle" font-size="8.5" fill="#d97706">可能性與角度</text>
+  <text x="275" y="91" text-anchor="middle" font-size="8.5" fill="#d97706">生成建議</text>
+
+  <line x1="320" y1="62" x2="340" y2="62" stroke="#2563eb" stroke-width="1.5" marker-end="url(#a5)"/>
+
+  <!-- S3 -->
+  <rect x="340" y="30" width="90" height="65" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="385" y="50" text-anchor="middle" font-size="11" font-weight="700" fill="#15803d">S3 草擬</text>
+  <text x="385" y="65" text-anchor="middle" font-size="8.5" fill="#16a34a">AI 撰寫個性化</text>
+  <text x="385" y="78" text-anchor="middle" font-size="8.5" fill="#16a34a">開發信</text>
+  <text x="385" y="91" text-anchor="middle" font-size="8.5" fill="#16a34a">進入審批隊列</text>
+
+  <line x1="430" y1="62" x2="450" y2="62" stroke="#2563eb" stroke-width="1.5" marker-end="url(#a5)"/>
+
+  <!-- S4 -->
+  <rect x="450" y="30" width="90" height="65" rx="8" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/>
+  <text x="495" y="50" text-anchor="middle" font-size="11" font-weight="700" fill="#be185d">S4 發送</text>
+  <text x="495" y="65" text-anchor="middle" font-size="8.5" fill="#db2777">人工審批通過</text>
+  <text x="495" y="78" text-anchor="middle" font-size="8.5" fill="#db2777">SMTP 寄出</text>
+  <text x="495" y="91" text-anchor="middle" font-size="8.5" fill="#db2777">標記已聯絡</text>
+
+  <!-- Fan out note -->
+  <text x="280" y="125" text-anchor="middle" font-size="10" fill="#64748b">↑ 扇出模式：S1 產出 N 條線索，每條線索獨立走完 S2→S3→S4</text>
+
+  <!-- Pipeline chaining -->
+  <rect x="80" y="145" width="400" height="28" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="280" y="163" text-anchor="middle" font-size="10" fill="#475569">每個階段完成時觸發 RxJS 事件，自動串聯下一階段 — 不需要輪詢</text>
+</svg>
+<div class="diagram-caption">整條流水線由事件驅動自動推進，前端通過 SSE 實時顯示進度。</div>
+</div>
+
+<h3>Pipeline 的關鍵機制</h3>
+
+<p><strong>Campaign 追蹤：</strong>每次搜索建立一條 Campaign 記錄（編號 <code>CAMP-XXXXXXXX</code>），記錄目標數量和各階段已完成數量。前端通過 SSE 的 <code>pipeline_progress</code> 事件實時更新搜索圈的進度百分比。</p>
+
+<p><strong>任務隊列的原子操作：</strong>Agent 認領任務用 MongoDB 的 <code>findOneAndUpdate</code>，保證在多 Agent 環境下不會重複認領。卡死超過 15 分鐘的任務由定時任務自動回收重排。</p>
+
+<p><strong>郵件審批狀態機：</strong>郵件有嚴格的狀態流轉：<code>pending → approved → sent</code>，或 <code>pending → rejected</code>。代碼裡用明確的狀態轉移表（State Machine）限制非法跳轉，例如不能從 <code>rejected</code> 直接變成 <code>sent</code>。</p>
+
+<hr>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 class="part4">第四部分：前端——十個頁面的設計邏輯</h2>
+
+<h3>儀表板（Dashboard）</h3>
+<p>四張 KPI 卡片（待審核郵件、新回覆、待約會議、待跟進），搭配漏斗進度條（線索→已聯絡→已回覆→約會議→累計發信）和甜甜圈圖（回覆分類統計）。所有指標從 Leads 和 Email Queue 的原始數據在前端即時計算——不依賴後端額外接口。</p>
+
+<h3>潛在客戶搜索（Search）</h3>
+<p>核心頁面。居中的動態光暈搜索欄，輸入關鍵字 + 香港 19 區 + 目標數量後觸發流水線。搜索進行中時，搜索欄變形為 144px 的進度圈，SVG stroke-dasharray 動畫顯示完成百分比，下方即時滾動日誌流。搜索完畢後展示結果卡片，附帶模擬 Google Maps 抓取過程的瀏覽器預覽動畫。</p>
+
+<h3>潛在客戶池（Leads）</h3>
+<p>系統最複雜的頁面（2800+ 行）。上方 KPI 統計條 + 主/子標籤頁系統。主標籤：準備中、等待回覆、已回覆。子標籤進一步細分：有興趣、約時間、有問題、沒興趣。表格按日期分組（今日/昨日/更早），分組標頭可摺疊（帶平滑 CSS 過渡動畫）。</p>
+<p>點擊列表項展開全屏詳情面板：公司資訊卡（帶彩色圖標）、客戶歷程時間線、標籤、回覆分析，右側是該公司所有關聯郵件的完整記錄。每封郵件以紙張質感卡片呈現（帶摺角），可單獨滾動，支持直接審批/拒絕/發送。</p>
+
+<h3>發件箱（Email Queue）</h3>
+<p>左側是按狀態分組的文件夾（全部/待處理/已核准/已拒絕/已發送/失敗），帶徽標計數。中間是郵件列表，支持多選批量操作。右側是郵件詳情。第二個標籤頁是郵件模板編輯器——三欄布局，帶變量插入和即時預覽。</p>
+
+<h3>任務看板（Tasks）</h3>
+<p>四列看板：待處理、處理中、已完成、失敗。每張卡片顯示任務類型標籤（S1-S4）、優先級、執行 Agent。點擊展開工作流面板，按步驟顯示執行時間線和進度條。</p>
+
+<h3>AI Agent 管理</h3>
+<p>最具視覺特色的頁面。左半部是等距像素藝術場景——維多利亞港天際線、摩天輪動畫、辦公室裡打字的開發者、睡覺的貓、搖尾巴的狗，根據當前時間切換日/夜場景。右半部顯示四個 Agent 的環形進度圖（Lead Scraper / Lead Analyzer / Email Drafter / Email Sender）、活動記錄和配置表。</p>
+
+<h3>其他頁面</h3>
+
+<table class="file-table">
+<tr><th>頁面</th><th>功能</th></tr>
+<tr><td>行事曆（Calendar）</td><td>月視圖 + 週視圖，事件按類型著色（會議/跟進/截止日期），時間軸 07:00–22:00</td></tr>
+<tr><td>Verified Emails</td><td>已驗證郵箱池管理，統計卡片 + 搜索 + CSV 匯出</td></tr>
+<tr><td>團隊（Users）</td><td>僅管理員可見，角色篩選 + 詳情/編輯面板</td></tr>
+<tr><td>設定（Settings）</td><td>鍵值對配置，含 Agent IP 地址專用欄位</td></tr>
+</table>
+
+<hr>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 class="part5">第五部分：技術難點與解決方案</h2>
+
+<h3>難點一：瀏覽器自動化 vs 反爬蟲</h3>
+<p><strong>問題：</strong>Google Maps 有嚴格的反爬蟲機制，傳統的 HTTP 爬蟲根本無法使用——頁面是 JavaScript 渲染的，且會檢測自動化行為。</p>
+<p><strong>解決：</strong>使用 CUA（Computer Use Agent）——不是在代碼層面操控 DOM，而是<span class="hl-y">像真人一樣操控滑鼠和鍵盤</span>，在真實瀏覽器裡模擬搜索、滾動、點擊商家卡片、複製信息。這比 Puppeteer/Playwright 更難被檢測。</p>
+
+<h3>難點二：NestJS 與 Python 管線共存</h3>
+<p><strong>問題：</strong>項目從 Python 管線遷移而來，MongoDB 裡已有大量 Python 寫入的數據——snake_case 命名、字符串格式的時間戳、status 為 null 代表新記錄。NestJS 的 Mongoose 模型預設會拒絕未定義的欄位。</p>
+<p><strong>解決：</strong>Mongoose Schema 設置 <code>strict: false</code>，保留 Python 寫入的所有欄位。公司名稱規範化函數同時處理中文法律後綴（有限公司、集團）和英文後綴（Ltd, Inc, Corp），確保去重邏輯跨語言一致。</p>
+
+<h3>難點三：流水線的可靠串聯</h3>
+<p><strong>問題：</strong>五階段流水線，每階段可能失敗或超時。S1 找到 5 家公司，每家要獨立走完 S2→S3→S4。如何保證不丟失、不重複？</p>
+<p><strong>解決：</strong>用 RxJS Subject 做進程內事件總線。任務完成時發出 <code>TaskEvents.completed$</code> 事件，Hermes 模塊訂閱後判斷完成的是哪個階段，自動排入下一階段任務。Campaign 記錄用 MongoDB 的 <code>$inc</code> 原子操作更新計數器。卡死任務由 Cron Job 每 10 分鐘掃描回收。</p>
+
+<h3>難點四：前端實時性</h3>
+<p><strong>問題：</strong>流水線可能跑幾分鐘到幾十分鐘，用戶需要實時看到進度。輪詢太慢且浪費帶寬。</p>
+<p><strong>解決：</strong>雙層實時策略——主路徑是 SSE（Server-Sent Events），後端推送 <code>lead_update</code>、<code>email_update</code>、<code>pipeline_progress</code> 等六種事件，前端收到後用 <code>invalidateQueries</code> 刷新對應的 React Query 緩存。備用路徑是 120 秒輪詢，保證 SSE 斷線時不丟數據。Agent 在 NestJS 進程外執行，通過 <code>POST /api/sse/notify</code> 向 SSE 總線推送事件。</p>
+
+<h3>難點五：2800 行的超大組件</h3>
+<p><strong>問題：</strong>Leads 頁面集中了列表、篩選、分組、排序、詳情面板、郵件操作等大量功能。單文件 2800+ 行，維護困難。</p>
+<p><strong>解決：</strong>在單文件內用清晰的分區策略——styled-components 定義在文件前半部分，子組件（如 LeadEmails）用獨立的函數組件定義在主組件之前。用自定義 Hook（<code>useDialog</code>）抽離彈窗邏輯。CSS 動畫（keyframes）集中定義在文件頂部。面對這個量級的代碼，<span class="hl-y">清晰的分區比強行拆文件更實用</span>——因為拆分會增加 props 傳遞的複雜度。</p>
+
+<h3>難點六：表格行的平滑摺疊動畫</h3>
+<p><strong>問題：</strong>HTML 的 <code>&lt;tr&gt;</code> 不支持直接動畫 height。想讓表格分組摺疊時有平滑的收縮效果而不是硬切。</p>
+<p><strong>解決：</strong>不隱藏行，而是保留行的 DOM 存在。通過在 <code>&lt;td&gt;</code> 上做 CSS transition——同時過渡 padding、max-height、opacity 和 border-color，實現從可見到零高度的平滑收縮。用 <code>$collapsed</code> prop 控制狀態切換。</p>
+
+<h3>難點七：暗色主題全局一致性</h3>
+<p><strong>問題：</strong>系統支持亮色/暗色切換，但有些顏色（如郵件卡片的紙張色、詳情面板標頭色）不能簡單反轉——需要單獨設計。</p>
+<p><strong>解決：</strong>用 <code>useTheme()</code> 的 <code>styledTheme.mode === 'dark'</code> 判斷當前模式，為特殊元素（紙張背景、摺角漸變、標頭底色等）提供獨立的暗色方案。主題狀態持久化到 localStorage，刷新後保持選擇。</p>
+
+<hr>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 class="part6">第六部分：面試怎麼講這個項目</h2>
+
+<h3>30 秒版本</h3>
+
+<div class="intro-box">
+「我在三人團隊裡負責前端，項目是一個 B2B 自動化外展系統。它用瀏覽器代理自動在 Google Maps 上找商家，用 AI 分析合作可能性並撰寫個性化開發信，通過人工審批後自動發送，還能追蹤回覆意向。技術上用 React + TypeScript + styled-components 做前端，NestJS + MongoDB 做後端，通過任務隊列解耦 AI 推理和瀏覽器自動化。」
+</div>
+
+<h3>三分鐘版本——可以展開的技術點</h3>
+
+<p><strong>架構層面：</strong>講解耦編排——NestJS 永不做重活，所有 AI 和瀏覽器操作通過 MongoDB 任務隊列委託給外部 Agent，用 RxJS 事件驅動串聯五階段流水線。這讓 Web 服務器始終響應快速，且 Agent 可獨立擴展。</p>
+
+<p><strong>前端層面：</strong>講 TanStack Query + SSE 的實時數據策略——不用 Redux，用 React Query 管理服務端狀態，通過 SSE 事件自動刷新緩存。講 styled-components 的主題系統如何實現亮/暗色切換。講 i18next 如何覆蓋 250+ 翻譯鍵實現三語支持。</p>
+
+<p><strong>難點層面：</strong>講 CUA 為什麼比 Puppeteer 更適合反爬蟲場景。講 Python 遺留數據的兼容策略。講超大組件的分區管理哲學。</p>
+
+<h3>團隊分工</h3>
+
+<table class="file-table">
+<tr><th>角色</th><th>負責</th></tr>
+<tr><td>A — 前端（實習生）</td><td>React 頁面、組件庫、主題系統、國際化、API 對接、UI/UX 設計</td></tr>
+<tr><td>B — 後端基礎</td><td>NestJS 骨架、JWT 認證、角色權限、安全配置</td></tr>
+<tr><td>C — 後端業務/AI</td><td>流水線編排、CUA 搜索、AI 分析、郵件系統、SSE 推送</td></tr>
+</table>
+
+<h3>技術關鍵詞速查</h3>
+
+<table class="file-table">
+<tr><th>類別</th><th>關鍵詞</th></tr>
+<tr><td>前端</td><td>React 19, TypeScript, Vite, styled-components, TanStack Query, React Router, i18next, SSE, Web Push, CSS Grid, keyframes animation</td></tr>
+<tr><td>後端</td><td>NestJS 11, MongoDB, Mongoose, JWT, bcrypt, RxJS, SSE, SMTP, Cron Jobs, Task Queue</td></tr>
+<tr><td>AI/自動化</td><td>MiniMax-M3, CUA (Computer Use Agent), Google Maps Scraping, NLP Reply Classification</td></tr>
+<tr><td>設計模式</td><td>解耦編排、事件驅動流水線、人機協作審批、原子任務認領、狀態機、Provider 套娃</td></tr>
+</table>
+
+<hr>
+
+<div class="think-box">
+這個項目的核心競爭力不是某個技術有多新，而是<strong>把多個技術串成了一條完整的商業閉環</strong>——從發現客戶到寄出開發信到追蹤回覆，全程自動化但保留人工審批。面試時展示你理解這條閉環的能力，比背出任何一個 API 的用法都更有說服力。
+</div>
+
+</body>
+</html>
