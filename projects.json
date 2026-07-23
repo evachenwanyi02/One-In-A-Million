@@ -28,5 +28,15 @@
     "editedAt": "2026-07-23T15:12:11",
     "location": "Hong Kong",
     "size": "lg"
+  },
+  {
+    "id": "ai-偵探系統-四層架構-改版後",
+    "name": "AI 偵探系統：四層架構（改版後）",
+    "tag": "PROJECT",
+    "href": "projects/ai-偵探系統-四層架構-改版後.html",
+    "createdAt": "2026-07-23T16:30:21",
+    "editedAt": null,
+    "location": "Hong Kong",
+    "size": "lg"
   }
 ]

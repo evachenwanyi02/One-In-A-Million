@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 偵探系統：四層架構（改版後）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+    background: #f0f0f5;
+    color: #1a1a2e;
+    line-height: 1.7;
+    padding: 32px 16px;
+  }
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .title-block {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .title-block h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a1a2e;
+    letter-spacing: 2px;
+  }
+  .title-block .subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-top: 6px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0ea;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .card-header {
+    font-size: 17px;
+    font-weight: 700;
+    color: #3b3b8f;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #ededf5;
+  }
+  .card-header .layer-num {
+    display: inline-block;
+    background: #3b3b8f;
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .card-header .layer-desc {
+    font-size: 13px;
+    font-weight: 400;
+    color: #888;
+    margin-left: 4px;
+  }
+  .box-row {
+    display: flex;
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .box-row > .box {
+    flex: 1;
+  }
+  .box {
+    border: 1.5px solid #d0d0e0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: #fafaff;
+  }
+  .box.highlight {
+    border-color: #7c6bbe;
+    background: #f5f3ff;
+  }
+  .box.new {
+    border-color: #e67e22;
+    background: #fffaf5;
+  }
+  .box.culprit {
+    border-color: #c0392b;
+    background: #fdf5f5;
+  }
+  .box .box-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #3b3b8f;
+    margin-bottom: 6px;
+  }
+  .box.new .box-title {
+    color: #d35400;
+  }
+  .box.culprit .box-title {
+    color: #c0392b;
+  }
+  .box ul {
+    list-style: none;
+    padding: 0;
+  }
+  .box ul li {
+    font-size: 13px;
+    color: #444;
+    padding: 1px 0;
+  }
+  .box ul li::before {
+    content: "•";
+    color: #999;
+    margin-right: 6px;
+  }
+  .box.new ul li::before { color: #e67e22; }
+  .box.culprit ul li::before { color: #c0392b; }
+  .note {
+    font-size: 13px;
+    color: #666;
+    margin: 10px 0;
+    padding: 10px 14px;
+    background: #f5f5fa;
+    border-radius: 6px;
+    border-left: 3px solid #b0b0cc;
+  }
+  .note.important {
+    border-left-color: #7c6bbe;
+    background: #f0eef8;
+  }
+  .note.new-note {
+    border-left-color: #e67e22;
+    background: #fef8f0;
+  }
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 18px 0;
+    flex-wrap: wrap;
+  }
+  .flow-box {
+    text-align: center;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 140px;
+  }
+  .flow-box.fb-data { background: #e8e6f0; color: #3b3b8f; }
+  .flow-box.fb-asm { background: #3b3b8f; color: #fff; }
+  .flow-box.fb-agent { background: #7c6bbe; color: #fff; }
+  .flow-box.fb-run { background: #e8e6f0; color: #3b3b8f; }
+  .flow-box small { display: block; font-weight: 400; font-size: 11px; margin-top: 2px; opacity: 0.85; }
+  .flow-arrow {
+    font-size: 20px;
+    color: #999;
+    margin: 0 4px;
+    flex-shrink: 0;
+  }
+  .tag-new {
+    display: inline-block;
+    background: #e67e22;
+    color: #fff;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-left: 4px;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  .section-desc {
+    font-size: 13.5px;
+    color: #444;
+    margin: 8px 0;
+  }
+  .code-block {
+    background: #f5f5fa;
+    border: 1px solid #e0e0ea;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 12.5px;
+    color: #333;
+    margin: 10px 0;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    line-height: 1.6;
+  }
+  .two-col {
+    display: flex;
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .two-col > div { flex: 1; }
+  .loop-diagram {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 16px 0;
+    position: relative;
+  }
+  .loop-step {
+    flex: 1;
+    text-align: center;
+    padding: 14px 10px;
+    border: 1.5px solid #d0d0e0;
+    background: #fafaff;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .loop-step:first-child { border-radius: 8px 0 0 8px; }
+  .loop-step:last-child { border-radius: 0 8px 8px 0; }
+  .loop-step .step-label {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 4px;
+  }
+  .loop-step .step-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #3b3b8f;
+  }
+  .loop-step .step-detail {
+    font-size: 11.5px;
+    color: #666;
+    margin-top: 4px;
+  }
+  .loop-step.active {
+    background: #3b3b8f;
+    border-color: #3b3b8f;
+  }
+  .loop-step.active .step-label,
+  .loop-step.active .step-name,
+  .loop-step.active .step-detail { color: #fff; }
+  .loop-step.agent-step {
+    background: #f5f3ff;
+    border-color: #7c6bbe;
+  }
+  .loop-step.agent-step .step-name { color: #5b3dbb; }
+  .loop-arrow {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    color: #bbb;
+    padding: 0 2px;
+  }
+  .feedback-arrow {
+    text-align: center;
+    margin: -4px 0 10px;
+    font-size: 12px;
+    color: #7c6bbe;
+    font-weight: 600;
+  }
+  .keyword-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 24px;
+    margin: 10px 0;
+  }
+  .keyword-row {
+    display: flex;
+    align-items: baseline;
+    font-size: 13px;
+    padding: 3px 0;
+  }
+  .keyword-row .kw-zh {
+    color: #333;
+    font-weight: 600;
+    min-width: 160px;
+  }
+  .keyword-row .kw-en {
+    color: #888;
+    font-size: 12px;
+  }
+  .divider {
+    height: 1px;
+    background: #e0e0ea;
+    margin: 16px 0;
+  }
+  @media (max-width: 640px) {
+    .box-row, .two-col { flex-direction: column; }
+    .loop-diagram { flex-direction: column; }
+    .loop-step:first-child { border-radius: 8px 8px 0 0; }
+    .loop-step:last-child { border-radius: 0 0 8px 8px; }
+    .loop-arrow { justify-content: center; transform: rotate(90deg); }
+    .keyword-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ═══════ TITLE ═══════ -->
+<div class="title-block">
+  <h1>AI 偵探系統：架構全覽</h1>
+  <div class="subtitle">數據層 → 組裝層 → Agent 層 → 運行層&emsp;｜&emsp;每層解決一個核心問題</div>
+</div>
+
+<!-- ═══════ SECTION 0: Agent 概念 ═══════ -->
+<div class="card">
+  <div class="card-header">先澄清：這裡的「智能體 Agent」不是「有手有腳」的那種</div>
+  <div class="two-col">
+    <div class="box">
+      <div class="box-title">工具型智能體（能行動的）</div>
+      <ul>
+        <li>大模型 + 搜索 + 寫代碼 + 調接口</li>
+        <li>能自主決定下一步做什麼</li>
+        <li>← 你理解的智能體</li>
+      </ul>
+    </div>
+    <div class="box highlight">
+      <div class="box-title">角色型智能體（只會說話的）</div>
+      <ul>
+        <li>大模型 + 限定的知識 + 入戲指令</li>
+        <li>只做一件事：用這個角色的身份說話</li>
+        <li>← 本項目的嫌疑人智能體</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">
+    智能體 ＝ 大模型 + 上下文約束（+ 可選的工具）。本項目的嫌疑人智能體不掛工具，只掛知識和人設。
+  </div>
+</div>
+
+<!-- ═══════ LAYER 1: DATA ═══════ -->
+<div class="card">
+  <div class="card-header">
+    <span class="layer-num">第一層</span> 數據層 — 案件怎麼存的
+    <span class="layer-desc">schema.ts + case-001.ts</span>
+  </div>
+
+  <div class="section-desc">每個案件是一份結構化數據檔案，用 Zod（格式校驗庫）約束，包含以下資料：</div>
+
+  <div class="box-row">
+    <div class="box">
+      <div class="box-title">公開資料</div>
+      <ul>
+        <li>案件簡報 briefing</li>
+        <li>時間線 timeline</li>
+        <li>證物列表 evidence</li>
+        <li>明線索 open — 玩家直接看到</li>
+        <li>暗線索 hidden — 需觸發才解鎖</li>
+      </ul>
+    </div>
+    <div class="box">
+      <div class="box-title">每個嫌疑人各自的資料</div>
+      <ul>
+        <li>姓名 / 性格 / 不在場證明</li>
+        <li>秘密 secret、動機 motive</li>
+        <li>知識陣列 knowledge[]</li>
+        <li>劇情線 narrativeThreads[]</li>
+        <li>態度演變 progressionGuidance</li>
+      </ul>
+    </div>
+    <div class="box culprit">
+      <div class="box-title">兇手獨有的資料</div>
+      <ul>
+        <li>isCulprit = true</li>
+        <li>撒謊策略 lyingStrategy</li>
+        <li>要隱瞞的事 hide[]</li>
+        <li>要編造的話 fabricate[]</li>
+        <li>備選謊話 fallbackClaim <span class="tag-new">v2</span></li>
+        <li>放棄條件 abandonWhen <span class="tag-new">v2</span></li>
+        <li>只注入兇手自己的提示詞</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box-row">
+    <div class="box new">
+      <div class="box-title">改版新增的結構 <span class="tag-new">NEW</span></div>
+      <ul>
+        <li><b>helpfulInfo[]</b> — 嫌疑人可以主動提供的有用信息，含觸發條件和偵探價值</li>
+        <li><b>naturalLeads[]</b> — 自然引導線，在特定話題下聯想到其他嫌疑人/證物（不是「你去問 xxx」）</li>
+        <li><b>discoveredFacts[]</b> — 偵探從各嫌疑人處蒐集到的已知事實（存在 GameState 裡）</li>
+        <li><b>narrativeThreads[]</b> — 每條劇情線拆分：canReveal（可以說）/ mustHide（不能說）/ naturalConnection（自然聯想）</li>
+        <li><b>revealStages[]</b> — 暗線索分階段揭示，每階段有獨立觸發條件和內容 <span class="tag-new">v2</span></li>
+        <li><b>EmotionState</b> — 四維情緒：pressure / trust / fatigue / guardedness（各 0-10） <span class="tag-new">v2</span></li>
+        <li><b>MemorySummary</b> — 對話歷史壓縮摘要，覆蓋式更新（每嫌疑人最多一條） <span class="tag-new">v2</span></li>
+        <li><b>evidenceProgress</b> — 每條證物目前解鎖到第幾階段（GameState） <span class="tag-new">v2</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">
+    三塊資料物理上都在同一個檔案裡，但組裝層會決定「發給大模型的時候只拿哪些」。<br>
+    知識級別不是代碼邏輯（沒有 if/else 條件判斷），而是寫成自然語言指令讓大模型自行判斷回答語氣。<br>
+    撒謊策略也是自然語言指令：告訴大模型「你要隱瞞 X、編造 Y」，大模型自行組織措辭。
+  </div>
+</div>
+
+<!-- ═══════ LAYER 2: ASSEMBLY ═══════ -->
+<div class="card">
+  <div class="card-header">
+    <span class="layer-num">第二層</span> 組裝層 — 資訊隔離 information isolation 在這裡發生（核心）
+    <span class="layer-desc">agent.ts buildSystemPrompt()</span>
+  </div>
+
+  <div class="section-desc">「組裝嫌疑人上下文」函數 <code>buildSuspectContext(suspect)</code> 做了什麼：</div>
+
+  <div class="box" style="margin: 12px 0;">
+    <ul>
+      <li>輸入：一個嫌疑人物件（比如張浩）</li>
+      <li>函數只讀張浩的知識陣列 → 不會去碰林美華或趙莉的資料</li>
+      <li>檢查「是否為兇手」isCulprit → 如果是 true，追加撒謊策略段落</li>
+      <li>如果是 false（無辜者），撒謊策略這段文字根本不會出現在提示詞裡</li>
+      <li>渲染 narrativeThreads[] → 每條劇情線的「可以說 / 不能說 / 自然聯想」</li>
+      <li>渲染 helpfulInfo[] → 「當話題涉及X時，你可以主動說出Y」 <span class="tag-new">NEW</span></li>
+      <li>渲染 naturalLeads[] → 「聊到X時，自然帶出Y」 <span class="tag-new">NEW</span></li>
+      <li>渲染 progressionGuidance → 前期/中期/後期/崩潰條件的態度演變</li>
+    </ul>
+  </div>
+
+  <div class="section-desc" style="font-weight: 600;">最終拼出的系統提示詞 system prompt 包含六個模組：</div>
+
+  <div class="flow">
+    <div class="flow-box fb-data">公開簡報<small>所有人一樣</small></div>
+    <div class="flow-arrow">+</div>
+    <div class="flow-box fb-asm">個人上下文<small>只有自己的知識</small></div>
+    <div class="flow-arrow">+</div>
+    <div class="flow-box fb-agent">情緒態勢<small class="tag-new" style="font-size:9px;">v2</small></div>
+    <div class="flow-arrow">+</div>
+    <div class="flow-box fb-agent">已知事實<small class="tag-new" style="font-size:9px;">NEW</small></div>
+    <div class="flow-arrow">+</div>
+    <div class="flow-box fb-agent">記憶摘要<small class="tag-new" style="font-size:9px;">v2</small></div>
+    <div class="flow-arrow">+</div>
+    <div class="flow-box fb-run">行為規則<small>輸出格式要求</small></div>
+  </div>
+
+  <div class="note important">
+    → 這就是「資訊隔離」：不是叫大模型「別說」，而是讓它「不知道」。<br>
+    → 組裝層的唯一職責：決定哪些資訊進入提示詞、哪些不進。控制輸入，而非控制輸出。
+  </div>
+
+  <div class="box new" style="margin-top: 14px;">
+    <div class="box-title">改版新增的提示詞規則 <span class="tag-new">NEW</span></div>
+    <ul>
+      <li><b>兇手 = 冷靜的棋手</b>：極其理智聰明，謊言嵌入大段真話中，面對矛盾先冷靜思考再回答</li>
+      <li><b>無辜者 = 主動的證人</b>：坦然交代、主動提供觀察、自然引出線索、有自己的推理和判斷</li>
+      <li><b>絕對禁止</b>：「你想想看」、反覆「不知道」、「去問 xxx」、歇斯底里、持續迴避</li>
+      <li><b>回答長度可變</b>：簡單問題 1-2 句直答；觸發劇情線 5-8 句展開；被追問矛盾可能只有短短一句辯解</li>
+      <li><b>情緒注入</b>：Clue Agent 評估的四維情緒狀態（pressure/trust/fatigue/guardedness）寫入 prompt，影響角色表現 <span class="tag-new">v2</span></li>
+      <li><b>跨嫌疑人信息</b>：偵探從其他人處問到的事實（discoveredFacts）注入 prompt，讓角色知道偵探掌握了什麼</li>
+      <li><b>記憶摘要</b>：≥6 輪後自動壓縮歷史，摘要注入 system prompt + 最近 3 輪完整對話 <span class="tag-new">v2</span></li>
+      <li><b>動態欺騙</b>：兇手的謊話根據 discoveredFacts 自動切換到備選版本 <span class="tag-new">v2</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════ LAYER 3: AGENTS ═══════ -->
+<div class="card">
+  <div class="card-header">
+    <span class="layer-num">第三層</span> Agent 層 — 數據怎麼餵給 LLM、LLM 怎麼用
+    <span class="layer-desc">agent.ts + clue-agent.ts + memory-agent.ts</span>
+  </div>
+
+  <div class="section-desc">
+    我們的數據層有大量結構化資訊（knowledge、narrativeThreads、helpfulInfo、naturalLeads、lyingStrategy……），但大模型不是數據庫查詢引擎。它的工作方式是：<b>你把一段文字塞給它，它根據文字回覆</b>。所以 Agent 層的核心任務就是——把結構化數據翻譯成自然語言指令，拼成一份「角色劇本」，讓 LLM 按劇本演戲。
+  </div>
+
+  <div class="note important">
+    下面用 <b>Agent → 能力單元 → 函數/數據</b> 的結構來拆解。<br>
+    Agent 的能力單元分三種：<br>
+    · <b>Prompt Module</b>（靜態模組）：讀取靜態數據，組裝成一段 prompt 片段。沒有運行時邏輯，每次輸入相同則輸出相同。<br>
+    · <b>Dynamic Module</b>（動態模組）：讀取運行時狀態（情緒、已知事實等），每輪產出不同的 prompt 片段。有 if/else 判斷，但最終產物仍是 prompt 文字。<br>
+    · <b>Skill</b>（技能）：有獨立的執行單元——自己的 LLM 呼叫或決策邏輯，產出結構化數據並寫入系統狀態。這才是真正的「技能」。
+  </div>
+
+  <div class="note new-note">
+    <b>好的能力單元的設計標準（貫穿下面每一個模組和技能的設計思路）：</b><br>
+    <b>① 數據邊界清晰</b>：每個單元對應一塊獨立的數據結構，不會出現「這塊數據到底歸誰管」的模糊地帶<br>
+    <b>② 形成反饋迴路</b>：最有生命力的單元不是注入一段靜態文字——它的輸出會變成下一輪的輸入，讓角色越來越「活」<br>
+    <b>③ 有降級路徑</b>：LLM 掛了不能讓遊戲卡住，每個依賴 LLM 的單元都有 fallback<br>
+    <b>④ 控制輸入不控制輸出</b>：不告訴 LLM「不要做什麼」，而是不給它做的材料——隔離信息而非限制行為<br>
+    <b>⑤ 向後兼容</b>：所有新欄位 <code>.optional()</code> 或 <code>.default()</code>，舊案件不加新欄位也能正常運行<br>
+    <b>⑥ 共用 LLM 呼叫</b>：判定邏輯高度重疊的單元合進同一次呼叫，不浪費 token
+  </div>
+</div>
+
+<!-- ── SUSPECT AGENT ── -->
+<div class="card">
+  <div class="card-header" style="border-bottom-color: #3b3b8f;">
+    <span style="background: #3b3b8f; color: #fff; font-size: 12px; padding: 2px 10px; border-radius: 10px; margin-right: 8px;">Agent ①</span>
+    Suspect Agent — 嫌疑人角色扮演
+    <span class="layer-desc">agent.ts · temperature 0.7 · maxTokens 600</span>
+  </div>
+
+  <div class="section-desc">
+    用一句話概括：<b>把案件數據變成角色劇本，讓 LLM 扮演一個有血有肉的嫌疑人</b>。溫度 0.7 是因為角色扮演需要多樣性和創造力——同樣的問題問兩次，回答不應該一模一樣，就像真人不會每次用同樣的措辭。
+  </div>
+
+  <div class="section-desc" style="font-weight: 700; margin: 16px 0 10px; color: #3b3b8f;">Suspect Agent 的能力拆解：4 Prompt Modules + 2 Dynamic Modules + 1 Skill + 1 Fallback</div>
+
+  <div class="section-desc" style="font-size: 13px; color: #666; margin-bottom: 14px;">
+    分三層理解：<b>Prompt Modules（靜態組裝）</b>（1-4 + 6：讀取靜態案件數據，拼成 prompt 片段。其中 6 是條件式——只在 isCulprit 時注入）→ <b>Dynamic Modules（動態組裝）</b>（5 + 7：讀取運行時狀態 EmotionState/discoveredFacts，每輪產出不同的 prompt 片段）→ <b>Skill（獨立執行）</b>（8：有自己的 LLM 呼叫，產出 MemorySummary 寫入 GameState）。
+  </div>
+
+  <!-- Skill 1 -->
+  <div class="box" style="margin-bottom: 14px;">
+    <div class="box-title" style="font-size: 14.5px;">
+      <span style="background:#3b3b8f; color:#fff; font-size:10px; padding:1px 7px; border-radius:6px; margin-right:6px;">Module 1</span>
+      資訊隔離 — 「只讓你知道你該知道的」<span style="color:#888; font-size:11px; margin-left:6px;">Prompt Module</span>
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      每個嫌疑人的 prompt 裡<b>只有自己的知識</b>。張浩看不到趙莉知道的事，反之亦然。函數 <code>buildSuspectContext(suspect)</code> 只讀一個嫌疑人物件。每條 knowledge fact 帶知識級別：[親眼所見] → 語氣確定；[聽說] → 自動加「我聽人說」；[不知情] → 直接說「不知道」。
+    </div>
+    <div style="font-size: 12px; color: #7c6bbe; margin-top: 6px; padding: 6px 10px; background: #f5f3ff; border-radius: 4px;">
+      <b>設計原則 ④</b>：不是告訴 LLM「不要說」——是壓根不給它看。控制輸入而非控制輸出。
+    </div>
+    <div style="font-size: 12px; color: #888; margin-top: 6px;">
+      <b>數據</b>：<code>suspect.knowledge[]</code> · <b>函數</b>：<code>buildSuspectContext()</code>
+    </div>
+  </div>
+
+  <!-- Skill 2 -->
+  <div class="box" style="margin-bottom: 14px;">
+    <div class="box-title" style="font-size: 14.5px;">
+      <span style="background:#3b3b8f; color:#fff; font-size:10px; padding:1px 7px; border-radius:6px; margin-right:6px;">Module 2</span>
+      劇情推進 — 「你的劇本是什麼、什麼時候演」<span style="color:#888; font-size:11px; margin-left:6px;">Prompt Module</span>
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      每個人有 3-5 條「劇情線」，每條是一個話題包。LLM 收到問題後先判斷「觸及了哪條劇情線」，然後按劇本展開。每條劇情線翻譯為三段指令：<code>canReveal</code>（可以說的）、<code>mustHide</code>（絕不能說）、<code>naturalConnection</code>（自然聯想），加上 <code>triggerHints</code> 告訴 LLM 進入條件。
+    </div>
+    <div style="font-size: 13px; color: #666; margin: 8px 0; padding: 8px 12px; background: #f5f5fa; border-radius: 6px;">
+      <b>舉例</b>：偵探問「你那天跟他喝了什麼？」→ 觸及「那天晚上的紅酒」劇情線 → canReveal 告訴 LLM 可以說紅酒是老陳自己開的 → mustHide 阻止它提到下毒 → naturalConnection 讓它順帶提到趙莉。
+    </div>
+    <div style="font-size: 12px; color: #7c6bbe; margin-top: 6px; padding: 6px 10px; background: #f5f3ff; border-radius: 4px;">
+      <b>設計原則 ①④</b>：每條劇情線是獨立的數據單元（邊界清晰）；mustHide 依然是控制輸入——不把「怎麼說」的指令給它，它自然不會說。
+    </div>
+    <div style="font-size: 12px; color: #888; margin-top: 6px;">
+      <b>數據</b>：<code>suspect.narrativeThreads[]</code> · <b>函數</b>：<code>buildSuspectContext()</code> 劇情線段
+    </div>
+  </div>
+
+  <!-- Skill 3 -->
+  <div class="box new" style="margin-bottom: 14px;">
+    <div class="box-title" style="font-size: 14.5px;">
+      <span style="background:#e67e22; color:#fff; font-size:10px; padding:1px 7px; border-radius:6px; margin-right:6px;">Module 3</span>
+      主動情報 — 「有用的話，主動說出來」<span class="tag-new">NEW</span> <span style="color:#888; font-size:11px;">Prompt Module</span>
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      改版前無辜嫌疑人只會「被動回答」。改版後每個人帶一組 <code>helpfulInfo[]</code>，當話題涉及時會像回憶往事一樣主動說出來——讓無辜者從「路人」升級為「積極的破案助手」。每條帶觸發條件，翻譯成 prompt 指令。
+    </div>
+    <div style="font-size: 13px; color: #666; margin: 8px 0; padding: 8px 12px; background: #fef8f0; border-radius: 6px;">
+      <b>舉例</b>：偵探問林美華「張浩這人怎麼樣？」→ 她主動說「張浩說自己不太喝酒，但我在飯局上看他灌了半瓶白酒面不改色」——直接戳穿張浩「只喝了一口」的借口。
+    </div>
+    <div style="font-size: 12px; color: #7c6bbe; margin-top: 6px; padding: 6px 10px; background: #f5f3ff; border-radius: 4px;">
+      <b>設計原則 ①</b>：helpfulInfo 和 narrativeThreads 職責分開——劇情線管「怎麼回答」，helpfulInfo 管「主動補充什麼」。數據邊界清晰。
+    </div>
+    <div style="font-size: 12px; color: #888; margin-top: 6px;">
+      <b>數據</b>：<code>suspect.helpfulInfo[]</code> · <b>函數</b>：<code>buildSuspectContext()</code> 有用信息段
+    </div>
+  </div>
+
+  <!-- Skill 4 -->
+  <div class="box new" style="margin-bottom: 14px;">
+    <div class="box-title" style="font-size: 14.5px;">
+      <span style="background:#e67e22; color:#fff; font-size:10px; padding:1px 7px; border-radius:6px; margin-right:6px;">Module 4</span>
+      自然引導 — 「不說『去問 xxx』，但把你引過去」<span class="tag-new">NEW</span> <span style="color:#888; font-size:11px;">Prompt Module</span>
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      嫌疑人在敘述中用自然聯想把偵探引向其他嫌疑人或某條證物。每條 <code>naturalLead</code> 帶話題觸發條件和一段自然語氣的引導語。數據裡有 <code>targetSuspectId</code> 標記指向目標，但 LLM 不知道 ID——它只按自然語氣說話，引導效果由案件設計者掌控。
+    </div>
+    <div style="font-size: 13px; color: #666; margin: 8px 0; padding: 8px 12px; background: #fef8f0; border-radius: 6px;">
+      <b>舉例</b>：趙莉自然說「有個男人帶著公文包進了後門，九點半他的車好像還停在那」→ 偵探自己想到：張浩說九點走的，車怎麼還在？→ 去追問張浩。
+    </div>
+    <div style="font-size: 12px; color: #7c6bbe; margin-top: 6px; padding: 6px 10px; background: #f5f3ff; border-radius: 4px;">
+      <b>設計原則 ④</b>：不給 LLM 「targetSuspectId」這種 meta 信息，只給它自然語氣的台詞。LLM 不知道自己在「引導」——它只是在講述。
+    </div>
+    <div style="font-size: 12px; color: #888; margin-top: 6px;">
+      <b>數據</b>：<code>suspect.naturalLeads[]</code> · <b>函數</b>：<code>buildSuspectContext()</code> 自然引導段
+    </div>
+  </div>
+
+  <!-- Skill 5 -->
+  <div class="box new" style="margin-bottom: 14px;">
+    <div class="box-title" style="font-size: 14.5px;">
+      <span style="background:#e67e22; color:#fff; font-size:10px; padding:1px 7px; border-radius:6px; margin-right:6px;">Dynamic 5</span>
+      動態適應 — 「根據局勢變化調整表演」<span class="tag-new">NEW</span> <span style="color:#888; font-size:11px;">Dynamic Module</span>
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      融合三種動態數據，讓角色的表現隨對話推進而變化：<br>
+      · <b>progressionGuidance</b>（態度演變）：四階段指令（前期坦然 → 中期謹慎 → 後期疲憊 → 崩潰條件），LLM 根據「第 N 次提問」自己判斷所處階段<br>
+      · <b>EmotionState</b>（四維情緒 <span class="tag-new">v2</span>）：來自 Clue Agent 的上一輪評估。pressure/trust/fatigue/guardedness 四個維度，不同組合產生不同角色表現。壓力 ≥ 6 時帶身體語言提示<br>
+      · <b>discoveredFacts</b>（偵探已知）：偵探從其他人處問到的信息，注入為「偵探可能已經知道的」段落
+    </div>
+    <div style="font-size: 12px; color: #7c6bbe; margin-top: 6px; padding: 6px 10px; background: #f5f3ff; border-radius: 4px;">
+      <b>設計原則 ②</b>：這是整個系統最核心的反饋迴路——Clue Agent 輸出情緒 → 注入下一輪 Suspect Agent → 影響回答 → Clue Agent 再次評估。第 1 輪和第 10 輪的 prompt 完全不同。
+    </div>
+    <div style="font-size: 12px; color: #888; margin-top: 6px;">
+      <b>數據</b>：<code>progressionGuidance</code> + <code>EmotionState</code> + <code>discoveredFacts[]</code> · <b>函數</b>：<code>buildEmotionContext()</code> + <code>buildDiscoveredFactsContext()</code>
+    </div>
+  </div>
+
+  <!-- Skill 6 -->
+  <div class="box culprit" style="margin-bottom: 14px;">
+    <div class="box-title" style="font-size: 14.5px;">
+      <span style="background:#c0392b; color:#fff; font-size:10px; padding:1px 7px; border-radius:6px; margin-right:6px;">Module 6</span>
+      精準欺騙 — 「兇手怎麼撒謊」（僅兇手）<span style="color:#888; font-size:11px; margin-left:6px;">Prompt Module（條件式）</span>
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      不是讓 LLM 自己決定怎麼撒謊——而是給它一份「欺騙劇本」。<code>hide[]</code> 規定隱瞞什麼，<code>fabricate[]</code> 規定在什麼話題上編什麼說辭，<code>fallbackBehavior</code> 規定被逼急了怎麼轉移話題。兇手定位為「冷靜的棋手」——謊言嵌在大段真話中。
+    </div>
+    <div style="font-size: 12px; color: #7c6bbe; margin-top: 6px; padding: 6px 10px; background: #f5f3ff; border-radius: 4px;">
+      <b>設計原則 ④</b>：無辜者不需要這個 Skill——因為組裝函數檢查 <code>isCulprit</code>，false 時 lyingStrategy 整段不出現在 prompt 裡。不是告訴 LLM「你不要撒謊」，而是壓根不給它撒謊的腳本。
+    </div>
+    <div style="font-size: 12px; color: #888; margin-top: 6px;">
+      <b>數據</b>：<code>lyingStrategy { hide[], fabricate[], fallbackBehavior }</code> · <b>函數</b>：<code>buildSuspectContext()</code>（<code>if isCulprit</code>）
+    </div>
+  </div>
+
+  <!-- Skill 7: Adaptive Deception -->
+  <div class="box new" style="margin-bottom: 14px; border-color: #c0392b; background: #fdf5f5;">
+    <div class="box-title" style="font-size: 14.5px; color: #c0392b;">
+      <span style="background:#c0392b; color:#fff; font-size:10px; padding:1px 7px; border-radius:6px; margin-right:6px;">Dynamic 7</span>
+      動態欺騙 — 「謊話被拆穿就換一個」（僅兇手）<span class="tag-new">NEW v2</span> <span style="color:#888; font-size:11px;">Dynamic Module</span>
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      Skill 6 的進化：每條 <code>fabricate</code> 新增 <code>fallbackClaim</code>（備選謊話）和 <code>abandonWhen</code>（放棄條件）。組裝時掃描 discoveredFacts 是否命中 abandonWhen 的關鍵詞——命中就自動切換到備選謊話。<b>判斷用字串匹配，不額外呼叫 LLM。</b>
+    </div>
+    <div style="font-size: 13px; color: #666; margin: 8px 0; padding: 8px 12px; background: #fdf5f5; border-radius: 6px;">
+      <b>舉例</b>：張浩主謊「我九點走了」，abandonWhen 含「車還在」。偵探從趙莉處得知「九點半車還停在那」→ discoveredFacts 命中 → prompt 自動切換：「哦對，我後來又折回去拿公文包了……」
+    </div>
+    <div style="font-size: 12px; color: #7c6bbe; margin-top: 6px; padding: 6px 10px; background: #f5f3ff; border-radius: 4px;">
+      <b>設計原則 ②⑤</b>：這也是反饋迴路的一部分——discoveredFacts 越多，兇手的 prompt 就越不同。而且 fallbackClaim 和 abandonWhen 都是 <code>.optional()</code>，不加就等於 Skill 6 的舊行為。
+    </div>
+    <div style="font-size: 12px; color: #888; margin-top: 6px;">
+      <b>數據</b>：<code>fabricate[].fallbackClaim + abandonWhen</code> · <b>函數</b>：<code>buildSuspectContext()</code> 動態渲染
+    </div>
+  </div>
+
+  <!-- Skill 8: Memory Summarization -->
+  <div class="box new" style="margin-bottom: 14px;">
+    <div class="box-title" style="font-size: 14.5px;">
+      <span style="background:#e67e22; color:#fff; font-size:10px; padding:1px 7px; border-radius:6px; margin-right:6px;">Skill 8</span>
+      記憶摘要 — 「長對話不丟重點」<span class="tag-new">NEW v2</span> <span style="color:#888; font-size:11px;">Skill（獨立 LLM 呼叫）</span>
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      ≥6 輪後，完整歷史太長。用一次低溫度呼叫（temp 0.1）壓縮為三段結構化摘要：【嫌疑人聲稱的事實】+【偵探追問重點】+【已暴露的可疑之處】。摘要注入 system prompt，最近 3 輪保留為完整 chat history。
+    </div>
+    <div style="font-size: 12px; color: #7c6bbe; margin-top: 6px; padding: 6px 10px; background: #f5f3ff; border-radius: 4px;">
+      <b>設計原則 ③</b>：LLM 摘要失敗時，自動退回「簡易摘要」——從 highlights 和回答前 50 字拼成。不阻塞遊戲。這也是唯一一個產生<b>額外 LLM 呼叫</b>的 Skill（由獨立的 Memory Agent 執行）。
+    </div>
+    <div style="font-size: 12px; color: #888; margin-top: 6px;">
+      <b>數據</b>：<code>GameState.memorySummaries[]</code> · <b>函數</b>：<code>summarizeHistory()</code> + <code>buildSummarizedHistory()</code> · <b>Agent</b>：<code>memory-agent.ts</code>
+    </div>
+  </div>
+
+  <!-- Suspect Agent IO -->
+  <div class="note" style="margin-top: 4px;">
+    <b>Suspect Agent 的輸入和輸出：</b><br>
+    <b>輸入</b> = 5 個 Module + 2 個 Dynamic Module 產生的 prompt 段落拼成的 system prompt +（Skill 8 的摘要或完整歷史）+ 這一輪的新問題<br>
+    <b>輸出</b> = 結構化 JSON（用 Zod 校驗，失敗時 fallback 提取）：<br>
+    　· <code>innerMonologue</code>：內心獨白——LLM 先想「觸及了哪條劇情線？該說什麼、藏什麼、聯想什麼？」（玩家在揭曉階段才看到）<br>
+    　· <code>reply</code>：說出口的話——長度自然變化，短則 1-2 句事實回答，長則 5-8 句故事展開<br>
+    　· <code>liedAbout[]</code>：這句話裡撒了什麼謊（空 = 沒撒謊。復盤時用）<br>
+    　· <code>highlights[]</code>：LLM 自己標出的關鍵短語（時間、地點、證物。前端高亮用）<br>
+    <b>主函數</b>：<code>interrogate(provider, caseData, suspectId, question, history, pressureCtx, discoveredFacts, memorySummary)</code>
+  </div>
+</div>
+
+<!-- ── CLUE AGENT ── -->
+<div class="card">
+  <div class="card-header" style="border-bottom-color: #5b3dbb;">
+    <span style="background: #5b3dbb; color: #fff; font-size: 12px; padding: 2px 10px; border-radius: 10px; margin-right: 8px;">Agent ②</span>
+    Clue Agent — 線索觸發 &amp; 情緒評估
+    <span class="layer-desc">clue-agent.ts · temperature 0.2 · maxTokens 300</span>
+  </div>
+
+  <div class="section-desc">
+    用一句話概括：<b>用 LLM 做「裁判」而不是「演員」</b>。Suspect Agent 讓 LLM 扮演角色（創造性，溫度 0.7），Clue Agent 讓 LLM 做判定（需要穩定一致，溫度 0.2）。同一個 LLM，不同溫度 = 不同用途。Clue Agent 在 Suspect Agent 之後運行——先讓嫌疑人回答，再讓裁判判定這段對話的「後果」。
+  </div>
+
+  <div class="section-desc" style="font-weight: 700; margin: 16px 0 10px; color: #5b3dbb;">Clue Agent 的 4 個 Skill（全部是真正的 Skill — 有獨立的 LLM 呼叫，產出結構化數據）：</div>
+
+  <div class="section-desc" style="font-size: 13px; color: #666; margin-bottom: 14px;">
+    和 Suspect Agent 不同，Clue Agent 的每個能力單元都是真正的 Skill——它們有自己的 LLM 呼叫，產出的不是 prompt 文字而是結構化數據（unlockedIds、EmotionState、stageReveals），並且會寫入 GameState 改變系統狀態。分層：<b>核心判定</b>（1：語義觸發）→ <b>附加評估</b>（2-3：情緒和階段推進，共享同一次 LLM 呼叫）→ <b>安全網</b>（4：降級容錯）。Skill 1-3 在同一次 LLM 呼叫裡完成——這是設計原則 ⑥ 的極致體現。
+  </div>
+
+  <!-- Clue Skill 1 -->
+  <div class="box" style="margin-bottom: 14px; border-color: #7c6bbe;">
+    <div class="box-title" style="font-size: 14.5px; color: #5b3dbb;">
+      <span style="background:#5b3dbb; color:#fff; font-size:10px; padding:1px 7px; border-radius:6px; margin-right:6px;">Skill 1</span>
+      語義觸發 — 「對話是否解鎖了暗線索？」
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      遊戲裡有些證物是「暗線索」——一開始不給玩家看，需要在對話中「觸發」才解鎖。這個 Skill 判斷每一輪對話是否觸發了某條暗線索。把偵探的問題、嫌疑人的回答、以及所有未解鎖暗線索的觸發條件描述一起塞給 LLM，問它「這段對話是否涉及了某條暗線索？」。
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      <b>為什麼用 LLM 而不用代碼</b>：代碼只能做關鍵詞匹配——對話裡出現「公文包」才觸發。但玩家可能問「他離開的時候手上拿的東西呢？」，沒有「公文包」三個字，語義上卻在問同一件事。LLM 能理解這種語義等價，代碼做不到。
+    </div>
+    <div style="font-size: 13px; color: #666; margin: 8px 0; padding: 8px 12px; background: #f5f3ff; border-radius: 6px;">
+      <b>舉例</b>：張浩說「老陳喝酒快，一杯下去眨眼的事」→ LLM 判定這段話語義上涉及了「紅酒杯」相關話題 → 觸發暗線索 ev-7「紅酒杯指紋比對報告」→ 偵探面板上多出一條新證物。
+    </div>
+    <div style="font-size: 12px; color: #7c6bbe; margin-top: 6px; padding: 6px 10px; background: #f5f3ff; border-radius: 4px;">
+      <b>設計原則 ④⑥</b>：只給 LLM 觸發條件的「描述」，不給它「應不應該觸發」的判斷框架——控制輸入讓 LLM 自己決定。同時，語義觸發和情緒評估、階段推進共用同一次 LLM 呼叫，不浪費 token。
+    </div>
+    <div style="font-size: 12px; color: #888; margin-top: 6px;">
+      <b>數據</b>：<code>evidence[].visibility === "hidden"</code> 的暗線索清單 + <code>triggerKeywords[]</code> · <b>函數</b>：<code>checkCluesWithAgent()</code> · <b>輸出</b>：<code>unlockedIds[]</code>
+    </div>
+  </div>
+
+  <!-- Clue Skill 2 -->
+  <div class="box new" style="margin-bottom: 14px; border-color: #7c6bbe;">
+    <div class="box-title" style="font-size: 14.5px; color: #5b3dbb;">
+      <span style="background:#5b3dbb; color:#fff; font-size:10px; padding:1px 7px; border-radius:6px; margin-right:6px;">Skill 2</span>
+      多維情緒評估 — 「嫌疑人現在什麼狀態？」<span class="tag-new">NEW v2</span>
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      在同一次 LLM 呼叫中（跟線索觸發共用），評估嫌疑人的<b>四維情緒狀態</b>。不再是單一壓力等級，而是更細膩的多維模型。情緒結果回傳到下一輪 Suspect Agent 的 Dynamic Module 5（動態適應），影響角色的整體表現。
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      <b>四維情緒模型 EmotionState</b>（每個 0-10 分）：<br>
+      · <b>pressure</b>（壓力）：被追問的緊迫感。0=毫無壓力 → 10=瀕臨崩潰<br>
+      · <b>trust</b>（信任）：對偵探的配合意願。0=完全敵對 → 5=中立 → 10=完全配合<br>
+      · <b>fatigue</b>（疲憊）：審問消耗。0=精神充沛 → 10=精疲力竭<br>
+      · <b>guardedness</b>（戒備）：被觸及敏感話題的警覺。0=坦然 → 10=高度警惕<br>
+      不同組合產生不同角色表現：高信任+低壓力→主動交代；低信任+高壓力→敷衍沉默；高疲憊+高戒備→簡短但措辭小心。壓力 ≥ 6 時額外生成<b>身體語言提示</b>（如「嫌疑人的手微微發抖」）。
+    </div>
+    <div style="font-size: 13px; color: #666; margin: 8px 0; padding: 8px 12px; background: #fef8f0; border-radius: 6px;">
+      <b>向後兼容</b>：保留舊的 <code>PressureLevel</code>（none/light/heavy/breakthrough）作為 pressure 數值的簡化映射。0-3→none, 4-5→light, 6-8→heavy, 9-10→breakthrough。
+    </div>
+    <div style="font-size: 12px; color: #7c6bbe; margin-top: 6px; padding: 6px 10px; background: #f5f3ff; border-radius: 4px;">
+      <b>設計原則 ②⑤⑥</b>：這是系統最關鍵的<b>跨 Agent 反饋迴路</b>——Clue Agent 輸出情緒 → Suspect Agent Dynamic 5 注入 → 影響回答 → Clue Agent 再次評估。同時向後兼容（PressureLevel 映射），且和 Skill 1/3 共享 LLM 呼叫。
+    </div>
+    <div style="font-size: 12px; color: #888; margin-top: 6px;">
+      <b>數據</b>：<code>GameState.emotionStates { suspectId: EmotionState }</code> · <b>函數</b>：<code>checkCluesWithAgent()</code> + <code>buildEmotionContext()</code> · <b>輸出</b>：<code>emotion</code> + <code>emotionHint</code>
+    </div>
+  </div>
+
+  <!-- Clue Skill 3: Progressive Reveal -->
+  <div class="box new" style="margin-bottom: 14px; border-color: #7c6bbe;">
+    <div class="box-title" style="font-size: 14.5px; color: #5b3dbb;">
+      <span style="background:#5b3dbb; color:#fff; font-size:10px; padding:1px 7px; border-radius:6px; margin-right:6px;">Skill 3</span>
+      分階段揭示 — 「越挖越深，一層一層揭開」<span class="tag-new">NEW v2</span>
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      原版暗線索是一次性開關——觸發就全部揭示。分階段揭示讓某些證物可以像剝洋蔥一樣，偵探每追問到一個新深度就揭示更多細節。每個階段有獨立的觸發條件，偵探需要步步深入才能看到完整真相。
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      <b>怎麼做</b>：證物新增可選欄位 <code>revealStages[]</code>，每個階段包含 <code>stage</code>（編號）、<code>content</code>（揭示內容）、<code>triggerDescription</code>（觸發條件）。Clue Agent 在同一次 LLM 呼叫中判斷已部分解鎖的證物是否觸發了下一階段。<code>GameState.evidenceProgress</code> 記錄每條證物目前解鎖到第幾階段，<code>getRevealedContent()</code> 和 <code>getEvidenceDescription()</code> 負責把階段進度轉換為前端可用的內容。
+    </div>
+    <div style="font-size: 13px; color: #666; margin: 8px 0; padding: 8px 12px; background: #fef8f0; border-radius: 6px;">
+      <b>舉例</b>：ev-6「法醫屍檢報告」拆為 3 階段：<br>
+      · 階段 1：死因概述（毒殺） → 問到死因/毒物就觸發<br>
+      · 階段 2：毒物細節（哪個杯子有毒） → 問到兩個杯子/下毒方式才觸發<br>
+      · 階段 3：精確死亡時間 21:15-21:45 → 問到時間矛盾/張浩離開時間才觸發<br>
+      沒有 <code>revealStages</code> 的證物 = 現有行為不變（一次全部揭示）。
+    </div>
+    <div style="font-size: 12px; color: #7c6bbe; margin-top: 6px; padding: 6px 10px; background: #f5f3ff; border-radius: 4px;">
+      <b>設計原則 ①⑤⑥</b>：每個 stage 是獨立的數據單元，觸發條件互不干擾（邊界清晰）。<code>revealStages</code> 為 <code>.optional()</code>——沒有它的證物完全不受影響（向後兼容）。階段判定和線索觸發、情緒評估共享同一次 LLM 呼叫。
+    </div>
+    <div style="font-size: 12px; color: #888; margin-top: 6px;">
+      <b>數據</b>：<code>evidence[].revealStages[]</code> + <code>GameState.evidenceProgress</code> · <b>函數</b>：<code>checkCluesWithAgent()</code> + <code>getRevealedContent()</code> + <code>getEvidenceDescription()</code> · <b>輸出</b>：<code>stageReveals[]</code>
+    </div>
+  </div>
+
+  <!-- Clue Skill 4 -->
+  <div class="box" style="margin-bottom: 14px; border-color: #7c6bbe;">
+    <div class="box-title" style="font-size: 14.5px; color: #5b3dbb;">
+      <span style="background:#5b3dbb; color:#fff; font-size:10px; padding:1px 7px; border-radius:6px; margin-right:6px;">Skill 4</span>
+      降級容錯 — 「LLM 掛了也不影響遊戲」
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      LLM 呼叫可能失敗（網路超時、返回格式錯誤、服務不可用）。這個 Skill 確保 Clue Agent 即使在 LLM 不可用的情況下也能工作——自動降級到純關鍵詞匹配。<code>try/catch</code> 包住 LLM 呼叫，失敗時回退到 <code>ClueManager</code>（純代碼匹配器），用 <code>evidence.triggerKeywords[]</code> 和對話文字做字串比對。
+    </div>
+    <div style="font-size: 13px; color: #444; margin: 8px 0;">
+      <b>降級的代價</b>：語義觸發退化為關鍵詞觸發（準確度下降），情緒評估回傳全零（EmotionState 四維都是 0），分階段揭示停止推進。但<b>遊戲不會卡住</b>——這是底線。
+    </div>
+    <div style="font-size: 12px; color: #7c6bbe; margin-top: 6px; padding: 6px 10px; background: #f5f3ff; border-radius: 4px;">
+      <b>設計原則 ③</b>：這個 Skill 本身就<b>是</b>降級路徑。它不產生新能力，它保護前面 3 個 Skill 的所有能力不會因為 LLM 故障而讓遊戲崩潰。三層降級：LLM → ClueManager 關鍵詞匹配 → 空結果（ClueManager 也不可用時）。
+    </div>
+    <div style="font-size: 12px; color: #888; margin-top: 6px;">
+      <b>數據</b>：<code>evidence[].triggerKeywords[]</code> · <b>函數</b>：<code>ClueManager.checkTriggers()</code>（fallback） · <b>輸出標記</b>：<code>usedLLM: false</code>
+    </div>
+  </div>
+
+  <!-- Clue Agent IO -->
+  <div class="note" style="margin-top: 4px; border-left-color: #7c6bbe;">
+    <b>Clue Agent 的輸入和輸出：</b><br>
+    <b>輸入</b> = 偵探的問題 + 嫌疑人的回答 + 未解鎖暗線索清單 + 可推進的分階段線索清單<br>
+    <b>輸出</b> = <code>ClueAgentResult { newlyUnlocked[], allUnlockedIds[], usedLLM, pressure, emotion, stageReveals[], pressureHint? }</code><br>
+    <b>一次呼叫完成三個判定</b>（線索觸發 + 情緒評估 + 階段推進），省 LLM 呼叫。<br>
+    <b>主函數</b>：<code>checkCluesWithAgent(provider, caseData, question, reply, alreadyUnlockedIds, evidenceProgress?)</code>
+  </div>
+</div>
+
+<!-- ── PIPELINE ── -->
+<div class="card">
+  <div class="card-header">三個 Agent 如何串聯 — 一輪對話的完整流水線</div>
+
+  <div class="loop-diagram">
+    <div class="loop-step">
+      <div class="step-label">輸入</div>
+      <div class="step-name">偵探提問</div>
+      <div class="step-detail">玩家輸入的問題</div>
+    </div>
+    <div class="loop-arrow">→</div>
+    <div class="loop-step" style="background: #fef8f0; border-color: #e67e22;">
+      <div class="step-label">LLM 呼叫 ⓪（條件）</div>
+      <div class="step-name" style="color: #d35400;">Memory Agent</div>
+      <div class="step-detail">≥6 輪時觸發<br>→ 壓縮歷史摘要<br>→ temp 0.1</div>
+    </div>
+    <div class="loop-arrow">→</div>
+    <div class="loop-step active">
+      <div class="step-label">LLM 呼叫 ①</div>
+      <div class="step-name">Suspect Agent</div>
+      <div class="step-detail">8 個 Skill 組裝 prompt<br>→ LLM 演角色<br>→ AgentResponse</div>
+    </div>
+    <div class="loop-arrow">→</div>
+    <div class="loop-step agent-step">
+      <div class="step-label">LLM 呼叫 ②</div>
+      <div class="step-name">Clue Agent</div>
+      <div class="step-detail">4 個 Skill 做判定<br>→ 觸發/推進線索<br>→ 評估情緒</div>
+    </div>
+    <div class="loop-arrow">→</div>
+    <div class="loop-step">
+      <div class="step-label">純代碼</div>
+      <div class="step-name">State Machine</div>
+      <div class="step-detail">更新 history<br>turnsUsed++<br>存 facts/emotion/progress</div>
+    </div>
+  </div>
+  <div class="feedback-arrow">↻ Clue Agent 的情緒狀態 + 階段進展 + 新的 discoveredFacts → 注入下一輪 Suspect Agent 的 Dynamic 5（動態適應）+ Dynamic 7（動態欺騙）</div>
+
+  <div class="note important">
+    每個嫌疑人是獨立的 LLM 呼叫，彼此之間<b>絕對不共享 prompt</b>——問張浩的時候，LLM 不知道林美華說過什麼。<br>
+    跨角色的資訊流通只透過 <b>discoveredFacts</b>（偵探視角的已知事實）間接實現：prompt 裡寫的是「偵探可能知道 X」，而不是「林美華告訴偵探 X」。<br>
+    <b>這就是為什麼叫「資訊隔離」而不是「角色隔離」——隔離的是信息，不是角色。</b>
+  </div>
+
+  <!-- Skill Summary Table -->
+  <div style="margin-top: 16px; font-size: 15px; font-weight: 700; color: #3b3b8f; margin-bottom: 10px;">能力單元速查表</div>
+  <div style="overflow-x: auto;">
+  <table style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
+    <thead>
+      <tr style="background: #f0f0f5;">
+        <th style="padding: 8px 10px; text-align: left; border-bottom: 2px solid #d0d0e0; color: #555;">Agent</th>
+        <th style="padding: 8px 10px; text-align: left; border-bottom: 2px solid #d0d0e0; color: #555;">名稱</th>
+        <th style="padding: 8px 10px; text-align: left; border-bottom: 2px solid #d0d0e0; color: #555;">類型</th>
+        <th style="padding: 8px 10px; text-align: left; border-bottom: 2px solid #d0d0e0; color: #555;">一句話說明</th>
+        <th style="padding: 8px 10px; text-align: left; border-bottom: 2px solid #d0d0e0; color: #555;">數據來源</th>
+        <th style="padding: 8px 10px; text-align: left; border-bottom: 2px solid #d0d0e0; color: #555;">核心函數</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding: 6px 10px;" rowspan="8"><b>Suspect</b><br><span style="color:#888; font-size:11px;">角色扮演</span></td>
+        <td style="padding: 6px 10px;">資訊隔離</td>
+        <td style="padding: 6px 10px; color: #3b3b8f; font-size: 11px;">Prompt Module</td>
+        <td style="padding: 6px 10px;">只讓角色知道自己該知道的</td>
+        <td style="padding: 6px 10px; font-family: monospace;">knowledge[]</td>
+        <td style="padding: 6px 10px; font-family: monospace;">buildSuspectContext()</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding: 6px 10px;">劇情推進</td>
+        <td style="padding: 6px 10px; color: #3b3b8f; font-size: 11px;">Prompt Module</td>
+        <td style="padding: 6px 10px;">按劇情線展開回答</td>
+        <td style="padding: 6px 10px; font-family: monospace;">narrativeThreads[]</td>
+        <td style="padding: 6px 10px; font-family: monospace;">buildSuspectContext()</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #eee; background: #fffaf5;">
+        <td style="padding: 6px 10px;">主動情報 <span class="tag-new">NEW</span></td>
+        <td style="padding: 6px 10px; color: #3b3b8f; font-size: 11px;">Prompt Module</td>
+        <td style="padding: 6px 10px;">主動提供對偵探有用的信息</td>
+        <td style="padding: 6px 10px; font-family: monospace;">helpfulInfo[]</td>
+        <td style="padding: 6px 10px; font-family: monospace;">buildSuspectContext()</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #eee; background: #fffaf5;">
+        <td style="padding: 6px 10px;">自然引導 <span class="tag-new">NEW</span></td>
+        <td style="padding: 6px 10px; color: #3b3b8f; font-size: 11px;">Prompt Module</td>
+        <td style="padding: 6px 10px;">敘事中帶出其他嫌疑人/證物</td>
+        <td style="padding: 6px 10px; font-family: monospace;">naturalLeads[]</td>
+        <td style="padding: 6px 10px; font-family: monospace;">buildSuspectContext()</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #eee; background: #fffaf5;">
+        <td style="padding: 6px 10px;">動態適應 <span class="tag-new">NEW</span></td>
+        <td style="padding: 6px 10px; color: #e67e22; font-size: 11px; font-weight: 700;">Dynamic Module</td>
+        <td style="padding: 6px 10px;">隨對話推進調整態度和策略</td>
+        <td style="padding: 6px 10px; font-family: monospace;">progressionGuidance + EmotionState + discoveredFacts</td>
+        <td style="padding: 6px 10px; font-family: monospace;">buildEmotionContext() + buildDiscoveredFactsContext()</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #eee; background: #fdf5f5;">
+        <td style="padding: 6px 10px;">精準欺騙 <span style="color:#c0392b; font-size:10px;">兇手限定</span></td>
+        <td style="padding: 6px 10px; color: #3b3b8f; font-size: 11px;">Prompt Module（條件式）</td>
+        <td style="padding: 6px 10px;">按欺騙劇本嵌入謊言</td>
+        <td style="padding: 6px 10px; font-family: monospace;">lyingStrategy { hide[], fabricate[] }</td>
+        <td style="padding: 6px 10px; font-family: monospace;">buildSuspectContext() (if isCulprit)</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #eee; background: #fdf5f5;">
+        <td style="padding: 6px 10px;">動態欺騙 <span class="tag-new">NEW v2</span> <span style="color:#c0392b; font-size:10px;">兇手限定</span></td>
+        <td style="padding: 6px 10px; color: #e67e22; font-size: 11px; font-weight: 700;">Dynamic Module</td>
+        <td style="padding: 6px 10px;">謊話被拆穿自動切換備選</td>
+        <td style="padding: 6px 10px; font-family: monospace;">fabricate[].fallbackClaim + abandonWhen</td>
+        <td style="padding: 6px 10px; font-family: monospace;">buildSuspectContext()</td>
+      </tr>
+      <tr style="border-bottom: 2px solid #d0d0e0; background: #fffaf5;">
+        <td style="padding: 6px 10px;">記憶摘要 <span class="tag-new">NEW v2</span></td>
+        <td style="padding: 6px 10px; color: #c0392b; font-size: 11px; font-weight: 700;">Skill</td>
+        <td style="padding: 6px 10px;">6 輪後壓縮歷史保留重點</td>
+        <td style="padding: 6px 10px; font-family: monospace;">GameState.memorySummaries[]</td>
+        <td style="padding: 6px 10px; font-family: monospace;">summarizeHistory() · memory-agent.ts</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding: 6px 10px;" rowspan="4"><b>Clue</b><br><span style="color:#888; font-size:11px;">裁判判定</span></td>
+        <td style="padding: 6px 10px;">語義觸發</td>
+        <td style="padding: 6px 10px; color: #c0392b; font-size: 11px; font-weight: 700;">Skill</td>
+        <td style="padding: 6px 10px;">判斷對話是否解鎖暗線索</td>
+        <td style="padding: 6px 10px; font-family: monospace;">evidence[].hidden + triggerKeywords</td>
+        <td style="padding: 6px 10px; font-family: monospace;">checkCluesWithAgent()</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #eee; background: #fffaf5;">
+        <td style="padding: 6px 10px;">多維情緒評估 <span class="tag-new">NEW v2</span></td>
+        <td style="padding: 6px 10px; color: #c0392b; font-size: 11px; font-weight: 700;">Skill</td>
+        <td style="padding: 6px 10px;">四維情緒模型取代單一壓力</td>
+        <td style="padding: 6px 10px; font-family: monospace;">EmotionState { pressure, trust, fatigue, guardedness }</td>
+        <td style="padding: 6px 10px; font-family: monospace;">checkCluesWithAgent() + buildEmotionContext()</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #eee; background: #fffaf5;">
+        <td style="padding: 6px 10px;">分階段揭示 <span class="tag-new">NEW v2</span></td>
+        <td style="padding: 6px 10px; color: #c0392b; font-size: 11px; font-weight: 700;">Skill</td>
+        <td style="padding: 6px 10px;">暗線索按階段逐步揭開</td>
+        <td style="padding: 6px 10px; font-family: monospace;">evidence[].revealStages[] + evidenceProgress</td>
+        <td style="padding: 6px 10px; font-family: monospace;">checkCluesWithAgent()</td>
+      </tr>
+      <tr style="border-bottom: 2px solid #d0d0e0;">
+        <td style="padding: 6px 10px;">降級容錯</td>
+        <td style="padding: 6px 10px; color: #c0392b; font-size: 11px; font-weight: 700;">Skill（Fallback）</td>
+        <td style="padding: 6px 10px;">LLM 掛了降級到關鍵詞匹配</td>
+        <td style="padding: 6px 10px; font-family: monospace;">evidence[].triggerKeywords[]</td>
+        <td style="padding: 6px 10px; font-family: monospace;">ClueManager.checkTriggers()</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ═══════ LAYER 4: RUNTIME ═══════ -->
+<div class="card">
+  <div class="card-header">
+    <span class="layer-num">第四層</span> 運行層 — 誰負責調大模型、誰負責管遊戲
+    <span class="layer-desc">provider.ts + state-machine.ts</span>
+  </div>
+
+  <div class="two-col">
+    <div class="box">
+      <div class="box-title">適配器 Provider = 大模型的統一介面</div>
+      <ul>
+        <li>類比：萬能插頭轉換器</li>
+        <li>不管插座是美標、歐標、英標<br>（DeepSeek / OpenAI / Anthropic）<br>電器這邊的插頭形狀永遠一樣</li>
+        <li>對話 chat(messages, 設定) → 回覆 response</li>
+        <li>業務代碼只調「對話 chat」方法，不關心背後是哪家大模型</li>
+        <li>換模型 = 改環境變數 .env，零代碼改動</li>
+      </ul>
+    </div>
+    <div class="box">
+      <div class="box-title">遊戲主控 Game Master = 純代碼狀態機</div>
+      <ul>
+        <li>管的事（不用大模型）：</li>
+        <li>遊戲階段切換 phase transition</li>
+        <li>指控判定（比對兇手編號 culpritId）</li>
+        <li>提問次數（暫設 999 = 無限）<span class="tag-new">NEW</span></li>
+        <li>不管的事（交給大模型）：</li>
+        <li>嫌疑人怎麼回答、撒不撒謊</li>
+        <li>說話的語氣和人味</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">
+    確定性的事用代碼 → 可測試、可預測<br>
+    創造性的事用大模型 → 有人味、每次不同
+  </div>
+</div>
+
+<!-- ═══════ SUMMARY FLOW ═══════ -->
+<div class="card">
+  <div class="card-header">總結：四層各自的職責</div>
+  <div class="flow" style="margin: 20px 0;">
+    <div class="flow-box fb-data" style="min-width: 120px;">數據層<small>定義世界觀<br>和角色設定</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box fb-asm" style="min-width: 120px;">組裝層<small>控制誰能<br>看到什麼</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box fb-agent" style="min-width: 120px;">Agent 層<small>多智能體<br>協作流水線</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box fb-run" style="min-width: 120px;">運行層<small>調大模型 +<br>管遊戲邏輯</small></div>
+  </div>
+  <div class="note important" style="text-align: center; font-weight: 600;">
+    整個系統的精髓：大模型只負責「扮演角色說話」這一件事<br>
+    資訊隔離靠組裝、遊戲邏輯靠代碼、角色深度靠數據
+  </div>
+</div>
+
+<!-- ═══════ DATA FLOW DETAIL ═══════ -->
+<div class="card">
+  <div class="card-header">附一：一輪對話的完整資料流 <span class="tag-new">NEW</span></div>
+  <div class="code-block">偵探提問「你那天晚上幾點離開的？」（第 7 輪，同一嫌疑人已問 6 次）
+    │
+    ▼
+Memory Agent → LLM(temp=0.1) → 壓縮前 4 輪為摘要（≥6 輪才觸發）
+    │  【聲稱事實】九點離開、走後門、只喝一口紅酒
+    │  【追問重點】離開時間、紅酒細節
+    │  【可疑之處】離開時間與趙莉所見矛盾
+    ▼
+buildSystemPrompt(張浩, caseData, turnCount=7, emotion={p:7,t:3,f:5,g:8}, discoveredFacts=[...])
+    │  拼接：公開簡報 + 個人上下文（含動態欺騙切換） + 情緒態勢 + 偵探已知 + 記憶摘要 + 行為規則
+    ▼
+Suspect Agent → LLM(temp=0.7) → { response: AgentResponse, updatedMemorySummary? }
+    │  { reply: "哦對，我後來又折回去拿公文包了...", liedAbout: ["離開時間"], highlights: ["九點半","公文包"] }
+    ▼
+Clue Agent → LLM(temp=0.2) → ClueAgentResult
+    │  { unlockedIds: [], emotion: {p:8,t:2,f:6,g:9}, stageReveals: [{ev-6, stage:3}],
+    │    emotionHint: "嫌疑人的手微微發抖，說話開始結巴" }
+    ▼
+State Machine → RECEIVE_ANSWER
+    │  turnsUsed++, history.push, emotionStates 更新, evidenceProgress 推進, memorySummaries 更新
+    ▼
+下一輪：emotion + stageReveals + discoveredFacts → 注入下一次 buildSystemPrompt()</div>
+</div>
+
+<!-- ═══════ KEYWORDS ═══════ -->
+<div class="card">
+  <div class="card-header">附二：每個模組對應的面試熱詞</div>
+  <div class="keyword-grid">
+    <div class="keyword-row">
+      <span class="kw-zh">嫌疑人智能體編排</span>
+      <span class="kw-en">→ multi-agent orchestration</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">知識三欄 + 上下文組裝</span>
+      <span class="kw-en">→ context engineering</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">穿幫檢測器</span>
+      <span class="kw-en">→ LLM-as-judge</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">自動評測系統</span>
+      <span class="kw-en">→ agentic evaluation / self-play</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">結構化輸出 + Zod 校驗重試</span>
+      <span class="kw-en">→ robust structured generation</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">審問記憶 / 壓力改口</span>
+      <span class="kw-en">→ agent memory &amp; state management</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">全鏈路請求日誌 / debug 頁</span>
+      <span class="kw-en">→ LLM observability / tracing</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">暗線索語義觸發 <span class="tag-new">NEW</span></span>
+      <span class="kw-en">→ semantic trigger / LLM routing</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">壓力反饋迴路 <span class="tag-new">NEW</span></span>
+      <span class="kw-en">→ agent feedback loop</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">跨嫌疑人信息流通 <span class="tag-new">NEW</span></span>
+      <span class="kw-en">→ cross-agent information flow</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">劇情線驅動對話 <span class="tag-new">NEW</span></span>
+      <span class="kw-en">→ narrative-driven dialogue</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">記憶摘要壓縮 <span class="tag-new">NEW v2</span></span>
+      <span class="kw-en">→ context window management / summarization</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">多維情緒模型 <span class="tag-new">NEW v2</span></span>
+      <span class="kw-en">→ affective computing / emotion state</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">分階段線索揭示 <span class="tag-new">NEW v2</span></span>
+      <span class="kw-en">→ progressive disclosure / staged reveal</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">動態欺騙策略 <span class="tag-new">NEW v2</span></span>
+      <span class="kw-en">→ adaptive deception / strategy switching</span>
+    </div>
+    <div class="keyword-row">
+      <span class="kw-zh">Provider 適配器模式 </span>
+      <span class="kw-en">→ adapter pattern / provider-agnostic</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ TECH STACK ═══════ -->
+<div class="card">
+  <div class="card-header">附三：技術棧</div>
+  <div class="section-desc">
+    pnpm monorepo：<b>core</b>（schema + agents + state machine）、<b>web</b>（Next.js 15 App Router + Tailwind）、<b>eval</b>（自動評估）<br>
+    LLM：provider-agnostic，支援 mock / deepseek / openai / anthropic<br>
+    結構化輸出：Zod 驗證 + fallback JSON 提取 + 原文兜底<br>
+    語言：TypeScript 全棧
+  </div>
+</div>
+
+</div>
+</body>
+</html>
